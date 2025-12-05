@@ -51,7 +51,9 @@ def reset():
     bet_input.pack(side="left")
     bet_button.pack(side="left")
     bet_input.bind("<Return>", get_bet)
+    bet_input.insert(0, f"{player.bet}")
     bet_input.focus_set()
+    bet_input.selection_range(0, tk.END)
 
 def game_over():
     # resetting screen to prevent any more button hitting
