@@ -1,0 +1,290 @@
+import tkinter as tk
+import random
+from modules.players import Player, Dealer
+from modules.image_adjuster import get_image
+from modules.info_getter import get_info
+
+# variables
+screen_size = {"width" : 500, "height" : 800}
+card_categories = ['Hearts', 'Diamonds', 'Clubs', 'Spades']
+cards_list = ['Ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King']
+deck_blueprint = [(card, category) for category in card_categories for card in cards_list]
+
+# def's
+
+def add_card(card, frame):
+    if not card == "joker":
+        image = get_image(card[0], card[1])
+    else:
+        # joker is a placeholder name for an empty card
+        image = get_image("joker", "joker")
+    card_label = tk.Label(frame, image=image)
+    card_label.image = image
+    card_amount = len(frame.winfo_children())
+    if card_amount > 4:
+        if not screen_size['width'] > card_amount * 125:
+            screen_size['width'] = card_amount * 125
+        root.geometry(f"{screen_size['width']}x{screen_size['height']}")
+        root.update()
+    card_label.pack(side="left", padx=10)
+
+def clear_cards(frame):
+    for widget in frame.winfo_children():
+        widget.destroy()
+
+def reset():
+    # resets the game back to the betting fase
+    global bet_input
+    clear_cards(player.frame)
+    clear_cards(dealer.frame)
+    result_button.destroy()
+    root.unbind("<Return>")
+    result_label.config(text="")
+    dealer_score_label.config(text="Dealer Score:")
+    player_score_label.config(text="Player Score:")
+    money_label.config(text=f"Money: ${player.get_money()}")
+    profit_label.config(text=f"Profit: ${player.get_profit()}")
+    bet_label = tk.Label(controls_frame, text="$")
+    bet_input = tk.Entry(controls_frame, width=10)
+    bet_button = tk.Button(controls_frame, text="Bet", command=get_bet)
+    bet_label.pack(side="left")
+    bet_input.pack(side="left")
+    bet_button.pack(side="left")
+    bet_input.bind("<Return>", get_bet)
+    bet_input.focus_set()
+
+def game_over():
+    # resetting screen to prevent any more button hitting
+    global result_button
+    try:
+        hit_button.destroy()
+        stand_button.destroy()
+        double_button.destroy()
+    except Exception as err:
+        pass # tries to destroy the button when it's not there is I just skip it
+    root.unbind("s")
+    root.unbind("h")
+    root.unbind("d")
+    # buttons will already be destroyed at stand()
+    result_button = tk.Button(result_frame, text="continue", command=reset)
+    root.bind("<Return>", lambda event: reset())
+    result_button.pack()
+
+def sync_cards(dealers_first: bool = False):
+    clear_cards(player.frame)
+    clear_cards(dealer.frame)
+    if dealers_first:
+        add_card(dealer.cards[0], dealer.frame)
+        add_card("joker", dealer.frame)
+    else:
+        for card in dealer.cards:
+            add_card(card, dealer.frame)
+    for card in player.cards:
+        add_card(card, player.frame)
+    dealer_score_label.config(text=f"Dealer Score: {dealer.get_score(dealers_first)}")
+    player_score_label.config(text=f"Player Score: {player.get_score()}")
+    money_label.config(text=f"Money: ${player.get_money()}")
+    profit_label.config(text=f"Profit: ${player.get_profit()}")
+
+    # check for busts
+    if player.get_score() > 21:
+        dealer_hitting() # skipping a step instead of calling stand() directly to prevent loop
+
+def hit():
+    try:double_button.destroy()
+    except Exception as err: pass
+    root.unbind("d")
+    if player.get_score() <= 21:
+        player.cards.append(deck.pop())
+        sync_cards(True)
+    else:
+        stand()
+
+def double():
+    player.adjust_money(-player.bet)
+    player.bet = player.bet*2
+    player.cards.append(deck.pop())
+    sync_cards(True)
+    root.after(1000, stand)
+
+def check_scores():
+    if player.get_score() > 21:
+        print("score over 21")
+        result_label.config(text="You are bust! You lose!")
+        pass
+    elif dealer.get_score() > 21:
+        print("dealer score over 21")
+        result_label.config(text=f"Dealers bust! You win ${player.bet*2}!")
+        player.adjust_money(player.bet*2)
+    elif player.get_score() == dealer.get_score():
+        print("push")
+        result_label.config(text="Push! You get your money back!")
+        player.adjust_money(player.bet)
+    elif player.get_score() > dealer.get_score():
+        print("score is higher")
+        result_label.config(text=f"Your score is higher! You win ${player.bet*2}!")
+        player.adjust_money(player.bet*2)
+    elif player.get_score() < dealer.get_score():
+        print("score is lower")
+        result_label.config(text="Your score is lower! You lose!")
+    game_over()
+
+def dealer_hitting():
+    if dealer.get_score() >= 17:
+        check_scores()
+        return
+    if player.get_score() > 21:
+        check_scores()
+        return
+    dealer.cards.append(deck.pop())
+    sync_cards()
+    root.after(900, dealer_hitting)
+
+def stand():
+    try: # kill the buttons to prevent multiple button presses while one is busy
+        hit_button.destroy()
+        stand_button.destroy()
+        double_button.destroy()
+    except Exception as err: pass
+    finally:
+        root.unbind("h")
+        root.unbind("d")
+        root.unbind("s")
+    sync_cards() # reveals the second card of dealer
+
+    # need to use this to slowly reveal the dealers' cards. time.sleep won't work.
+    root.after(900, dealer_hitting)
+
+# made by AI, was lazy, this is a clean fix for blackjack
+def check_blackjacks():
+    player_score = player.get_score()
+    dealer_score = dealer.get_score()  # Returns total score (both cards)
+
+    # Check if anyone has 21
+    player_has_bj = player_score == 21
+    dealer_has_bj = dealer_score == 21
+
+    # If neither has Blackjack, we just return and let the game continue
+    if not player_has_bj and not dealer_has_bj:
+        return
+
+    # --- Someone has Blackjack, Game Ends Now ---
+
+    # 1. Reveal the dealer's hole card
+    sync_cards(dealers_first=False)
+
+    # 2. Logic for who wins
+    if player_has_bj and dealer_has_bj:
+        result_label.config(text="Both have Blackjack! Push!")
+        player.adjust_money(player.bet)  # Return original bet
+
+    elif player_has_bj:
+        # Blackjack typically pays 3:2.
+        # If bet is 10, you get back 10 + 15 = 25.
+        win_amount = player.bet + (player.bet * 1.5)
+        result_label.config(text=f"Blackjack! You win ${int(win_amount)}!")
+        player.adjust_money(win_amount)
+
+    elif dealer_has_bj:
+        result_label.config(text="Dealer has Blackjack! You lose!")
+        # No money returned
+
+    # 3. Clean up buttons and bindings immediately
+    try:
+        hit_button.destroy()
+        stand_button.destroy()
+        double_button.destroy()
+    except:
+        pass
+
+    # 4. Trigger Game Over screen
+    game_over()
+
+def start_game():
+    global deck, hit_button, stand_button, double_button
+    # clear cards and reset screen size
+    clear_cards(player.frame)
+    clear_cards(dealer.frame)
+    clear_cards(controls_frame)
+
+    hit_button = tk.Button(controls_frame, text="Hit", command=lambda: hit())
+    stand_button = tk.Button(controls_frame, text="Stand", command=lambda: stand())
+    if player.get_money() >= player.bet * 2:
+        double_button = tk.Button(controls_frame, text="Double", command=double)
+        double_button.pack()
+        root.bind('d', lambda event: double())
+    hit_button.pack(side="right")
+    stand_button.pack(side="left")
+
+    root.bind('h', lambda event: hit())
+    root.bind('s', lambda event: stand())
+    screen_size['width'] = 500
+    root.geometry(f"{screen_size['width']}x{screen_size['height']}")
+    root.update()
+
+    # reset deck and cards and deal cards
+    deck = deck_blueprint.copy() * 6 # variable numbers of decks
+    random.shuffle(deck)
+    dealer.cards = []
+    player.cards = []
+    for _ in range(2):
+        player.cards.append(deck.pop())
+        dealer.cards.append(deck.pop())
+    sync_cards(True)
+    check_blackjacks()
+
+def get_bet(event = None):
+    try:
+        player.bet = int(bet_input.get())
+    except Exception as err:
+        result_label.config(text = f"{err}")
+        return
+    if player.bet > player.get_money():
+        result_label.config(text = "Can't bet more than you have!")
+        return
+    if player.bet <= 0:
+        result_label.config(text = "Can't bet nothing or less!")
+        return
+    player.adjust_money(-player.bet)
+    result_label.config(text="") # remove error text if needed
+    start_game()
+
+deck = []
+dealer = Dealer()
+data = get_info()
+player = Player(data["money"], data["profit"])
+
+# root
+root = tk.Tk()
+root.title("Blackjack")
+root.geometry(f"{screen_size["width"]}x{screen_size['height']}")
+
+# frames
+dealer.frame = tk.Frame(root, bg="green", pady=20)
+dealer.frame.pack(side="top", fill="x")
+dealer_score_label = tk.Label(root, name="dealer_score", text="Dealer Score:", bg="green")
+dealer_score_label.pack()
+
+player.frame = tk.Frame(root, bg="red", pady=20)
+player.frame.pack(side="top", fill="x")
+player_score_label = tk.Label(root, name="player_score", text="Player Score:", bg="red")
+player_score_label.pack()
+
+controls_frame = tk.Frame(root, pady=20)
+controls_frame.pack(fill="x")
+
+result_frame = tk.Frame(root)
+result_frame.pack()
+result_label = tk.Label(result_frame, text="", name="result_label")
+result_label.pack(side="top")
+result_button = tk.Button(result_frame, text="continue")
+result_button.pack()
+
+money_label = tk.Label(root, text=f"Money: ${player.get_money()}")
+profit_label = tk.Label(root, text=f"Profit: ${player.get_profit()}")
+profit_label.pack(side="bottom")
+money_label.pack(side="bottom")
+
+reset() # deleted duplicate code
+
+root.mainloop()
