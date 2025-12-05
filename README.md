@@ -12,7 +12,9 @@ linux:
 Then open blackjack_GUI.py to have some fun!
 
 ## keybinds
+```
 `s` to stand
 `h` to hit
 `d` to double
 `enter` to enter a bet and to press continue
+```
