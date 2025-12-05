@@ -10,3 +10,9 @@ linux:
 `python3 -m pip install -r requirements.txt`
 
 Then open blackjack_GUI.py to have some fun!
+
+## keybinds
+`s` to stand
+`h` to hit
+`d` to double
+`enter` to enter a bet and to press continue
