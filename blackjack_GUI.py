@@ -101,6 +101,15 @@ def hit():
         stand()
 
 def double():
+    try: # kill the buttons to prevent multiple button presses while one is busy
+        hit_button.destroy()
+        stand_button.destroy()
+        double_button.destroy()
+    except Exception as err: pass
+    finally:
+        root.unbind("h")
+        root.unbind("d")
+        root.unbind("s")
     player.adjust_money(-player.bet)
     player.bet = player.bet*2
     player.cards.append(deck.pop())
