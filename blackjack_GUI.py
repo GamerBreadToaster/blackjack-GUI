@@ -252,7 +252,7 @@ def get_bet(event = None):
         result_label.config(text = "Can't bet more than you have!")
         return
     if player.bet <= 0:
-        result_label.config(text = "Can't bet nothing or less!")
+        result_label.config(text = "Can't bet nothing or less than nothing!")
         return
     player.adjust_money(-player.bet)
     result_label.config(text="") # remove error text if needed
