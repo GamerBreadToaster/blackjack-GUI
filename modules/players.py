@@ -16,6 +16,9 @@ class Player:
     def adjust_profit(self, value):
         self.__profit += value
 
+    def set_money(self, value: float):
+        self.__money = value
+
     def adjust_money(self, value):
         self.__money += value
         self.adjust_profit(value)

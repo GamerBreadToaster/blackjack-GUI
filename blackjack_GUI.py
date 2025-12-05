@@ -47,6 +47,9 @@ def reset():
     bet_label = tk.Label(controls_frame, text="$")
     bet_input = tk.Entry(controls_frame, width=10)
     bet_button = tk.Button(controls_frame, text="Bet", command=get_bet)
+    if player.get_money() == 0:
+        free_money_button = tk.Button(root, text="free $1000", command=lambda: give_money(free_money_button))
+        free_money_button.pack()
     bet_label.pack(side="left")
     bet_input.pack(side="left")
     bet_button.pack(side="left")
@@ -210,6 +213,11 @@ def check_blackjacks():
 
     # 4. Trigger Game Over screen
     game_over()
+
+def give_money(button: tk.Button):
+    player.set_money(1000)
+    button.destroy()
+    money_label.config(text="Money: $1000")
 
 def start_game():
     global deck, hit_button, stand_button, double_button
