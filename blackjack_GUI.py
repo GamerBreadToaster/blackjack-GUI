@@ -228,7 +228,7 @@ def start_game():
 
     hit_button = tk.Button(controls_frame, text="Hit", command=lambda: hit())
     stand_button = tk.Button(controls_frame, text="Stand", command=lambda: stand())
-    if player.get_money() >= player.bet * 2:
+    if player.get_money() >= player.bet:
         double_button = tk.Button(controls_frame, text="Double", command=double)
         double_button.pack()
         root.bind('d', lambda event: double())
