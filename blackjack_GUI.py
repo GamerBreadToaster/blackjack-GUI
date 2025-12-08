@@ -65,7 +65,7 @@ def game_over():
         hit_button.destroy()
         stand_button.destroy()
         double_button.destroy()
-    except Exception as err:
+    except Exception:
         pass # tries to destroy the button when it's not there is I just skip it
     root.unbind("s")
     root.unbind("h")
@@ -97,12 +97,15 @@ def sync_cards(dealers_first: bool = False):
 
 def hit():
     try:double_button.destroy()
-    except Exception as err: pass
+    except Exception: pass
     root.unbind("d")
     if player.get_score() <= 21:
         player.cards.append(deck.pop())
         sync_cards(True)
     else:
+        stand()
+    # check for 21 after grabbing cards
+    if player.get_score() == 21:
         stand()
 
 def double():
@@ -110,7 +113,7 @@ def double():
         hit_button.destroy()
         stand_button.destroy()
         double_button.destroy()
-    except Exception as err: pass
+    except Exception: pass
     finally:
         root.unbind("h")
         root.unbind("d")
@@ -160,7 +163,7 @@ def stand():
         hit_button.destroy()
         stand_button.destroy()
         double_button.destroy()
-    except Exception as err: pass
+    except Exception: pass
     finally:
         root.unbind("h")
         root.unbind("d")
