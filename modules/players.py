@@ -23,8 +23,6 @@ class Player:
     def adjust_money(self, value):
         self.__money += value
         self.adjust_profit(value)
-        set_info(self.__money, self.__profit)
-        # automatically save money to save on using repeating code
 
     def get_money(self):
         return self.__money

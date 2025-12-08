@@ -2,7 +2,7 @@ import tkinter as tk
 import random
 from modules.players import Player, Dealer
 from modules.image_adjuster import get_image
-from modules.info_getter import get_info
+from modules.info_getter import get_info, set_info
 
 # variables
 screen_size = {"width" : 500, "height" : 800}
@@ -50,6 +50,9 @@ def reset():
     player.double = False
     result_button.destroy()
     root.unbind("<Return>")
+    set_info(player)
+
+    # labels and buttons
     result_label.config(text="")
     dealer_score_label.config(text="Dealer Score:")
     player_score_label.config(text="Player Score:")
@@ -177,7 +180,7 @@ def check_blackjacks():
     clear_buttons()
 
     # 2. Schedule the reveal AND the resolution
-    # We delay the entire sequence of events by 1 second (1000ms)
+    # We delay the entire sequence of events by 1 second (1000 ms)
     root.after(1000, lambda: finish_blackjack_round(player_has_bj, dealer_has_bj))
 
 def finish_blackjack_round(player_has_bj, dealer_has_bj):
@@ -189,7 +192,7 @@ def finish_blackjack_round(player_has_bj, dealer_has_bj):
     # B. THEN calculate wins/losses
     if player_has_bj and dealer_has_bj:
         result_label.config(text="Both have Blackjack! Push!")
-        print("push")
+        print("blackjack push")
         player.adjust_money(player.bet)
 
     elif player_has_bj:
@@ -256,6 +259,7 @@ def get_bet(event = None):
         result_label.config(text = "Can't bet nothing or less than nothing!")
         return
     player.adjust_money(-player.bet)
+    set_info(player)
     result_label.config(text="") # remove error text if needed
     start_game()
 
@@ -267,7 +271,7 @@ player = Player(data["money"], data["profit"])
 # root
 root = tk.Tk()
 root.title("Blackjack")
-root.geometry(f"{screen_size["width"]}x{screen_size['height']}")
+root.geometry(f"{screen_size['width']}x{screen_size['height']}")
 
 # frames
 dealer.frame = tk.Frame(root, bg="green", pady=20)
