@@ -11,7 +11,6 @@ cards_list = ['Ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Quee
 deck_blueprint = [(card, category) for category in card_categories for card in cards_list]
 
 # def's
-
 def add_card(card, frame):
     if not card == "joker":
         image = get_image(card[0], card[1])
