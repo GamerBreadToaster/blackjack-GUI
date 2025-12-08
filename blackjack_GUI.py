@@ -97,10 +97,6 @@ def sync_cards(dealers_first: bool = False):
     money_label.config(text=f"Money: ${player.get_money()}")
     profit_label.config(text=f"Profit: ${player.get_profit()}")
 
-    # check for busts
-    if player.get_score() > 21 and not player.double:
-        dealer_hitting() # skipping a step instead of calling stand() directly to prevent loop
-
 def hit():
     try:double_button.destroy()
     except Exception: pass
@@ -108,11 +104,12 @@ def hit():
     if player.get_score() <= 21:
         player.cards.append(deck.pop())
         sync_cards(True)
-    else:
-        stand()
-    # check for 21 after grabbing cards
+    # check for 21 and higher after grabbing cards
     if player.get_score() == 21:
         stand()
+    if player.get_score() > 21:
+        sync_cards(False)
+        check_scores()
 
 def double():
     clear_buttons()
@@ -127,7 +124,6 @@ def check_scores():
     if player.get_score() > 21:
         print("score over 21")
         result_label.config(text="You are bust! You lose!")
-        pass
     elif dealer.get_score() > 21:
         print("dealer score over 21")
         result_label.config(text=f"Dealers bust! You win ${player.bet*2}!")
@@ -147,9 +143,6 @@ def check_scores():
 
 def dealer_hitting():
     if dealer.get_score() >= 17:
-        check_scores()
-        return
-    if player.get_score() > 21:
         check_scores()
         return
     dealer.cards.append(deck.pop())

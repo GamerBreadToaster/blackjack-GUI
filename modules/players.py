@@ -1,5 +1,4 @@
 from modules.score_calc import calculate_score, card_value
-from modules.info_getter import set_info
 
 # player and dealer classes
 class Player:
