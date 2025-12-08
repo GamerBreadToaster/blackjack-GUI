@@ -37,6 +37,7 @@ def reset():
     global bet_input
     clear_cards(player.frame)
     clear_cards(dealer.frame)
+    player.double = False
     result_button.destroy()
     root.unbind("<Return>")
     result_label.config(text="")
@@ -92,7 +93,7 @@ def sync_cards(dealers_first: bool = False):
     profit_label.config(text=f"Profit: ${player.get_profit()}")
 
     # check for busts
-    if player.get_score() > 21:
+    if player.get_score() > 21 and not player.double:
         dealer_hitting() # skipping a step instead of calling stand() directly to prevent loop
 
 def hit():
@@ -118,6 +119,7 @@ def double():
     player.adjust_money(-player.bet)
     player.bet = player.bet*2
     player.cards.append(deck.pop())
+    player.double = True
     sync_cards(True)
     root.after(1000, stand)
 
