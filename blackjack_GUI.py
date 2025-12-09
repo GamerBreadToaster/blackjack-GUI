@@ -2,7 +2,8 @@ import tkinter as tk
 import random
 from modules.players import *
 from modules.image_adjuster import get_image
-from modules.info_getter import get_info, set_info
+from modules.file_adjuster import get_info, set_info, get_settings
+from modules.settings_GUI import settings_gui
 
 # variables
 screen_size = {"width" : 500, "height" : 800}
@@ -48,14 +49,14 @@ def clear_buttons():
 
 def reset():
     # resets the game back to the betting fase
-    global bet_input
+    global bet_input, settings_button
     clear_cards(player.frame)
     clear_cards(dealer.frame)
     player.double = False
     result_button.destroy()
     root.unbind("<Return>")
     root.unbind("<F4>")
-    set_info(player, settings)
+    set_info(player)
 
     # labels and buttons
     result_label.config(text="")
@@ -79,6 +80,8 @@ def reset():
     bet_input.insert(0, f"{player.original_bet}")
     bet_input.focus_set()
     bet_input.selection_range(0, tk.END)
+    settings_button = tk.Button(bottom_frame, text="settings", command=edit_settings)
+    settings_button.place(relx=1.0, rely=1.0, anchor="se", x=-10, y=-5)
 
 def game_over():
     # resetting screen to prevent any more button hitting
@@ -221,6 +224,7 @@ def start_game():
     clear_cards(player.frame)
     clear_cards(dealer.frame)
     clear_cards(controls_frame)
+    settings_button.destroy()
 
     hit_button = tk.Button(controls_frame, text="Hit\nF3", command=lambda: hit())
     stand_button = tk.Button(controls_frame, text="Stand\nF1", command=lambda: stand())
@@ -268,15 +272,16 @@ def get_bet(event = None):
     root.unbind("<Return>")
     root.unbind("<F4>")
     player.adjust_money(-player.bet)
-    set_info(player, settings)
+    set_info(player)
     result_label.config(text="") # remove error text if needed
     start_game()
 
 deck = []
 dealer = Dealer()
 data = get_info()
+data_settings = get_settings()
 player = Player(data["money"], data["profit"])
-settings = Settings(data["cooldown"])
+settings = Settings(data_settings["cooldown"])
 
 # root
 root = tk.Tk()
@@ -304,15 +309,17 @@ result_label.pack(side="top")
 result_button = tk.Button(result_frame, text="continue")
 result_button.pack()
 
+def edit_settings():
+    global settings
+    settings = settings_gui(settings)
 
 # money frame
-money_frame = tk.Frame(root)
-money_frame.pack(side="bottom")
-money_label = tk.Label(money_frame, text=f"Cash: ${player.get_money()}")
-profit_label = tk.Label(money_frame, text=f"Profit: ${player.get_profit()}")
+bottom_frame = tk.Frame(root)
+bottom_frame.pack(side="bottom", fill="x", pady=10)
+money_label = tk.Label(bottom_frame, text=f"Cash: ${player.get_money()}")
+profit_label = tk.Label(bottom_frame, text=f"Profit: ${player.get_profit()}")
 profit_label.pack(side="bottom")
 money_label.pack(side="bottom")
-
 reset() # deleted duplicate code
 
 root.mainloop()
