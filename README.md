@@ -13,8 +13,8 @@ Then open blackjack_GUI.py to have some fun!
 
 ## keybinds
 ```
-`s` to stand
-`h` to hit
-`d` to double
-`enter` to enter a bet and to press continue
+'s', 'space' and 'f1' to stand
+'h' and 'f3' to hit
+'d 'and 'f2' to double
+'enter' and 'f4 'to enter a bet and to press continue
 ```
