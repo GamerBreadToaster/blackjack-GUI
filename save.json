@@ -1,4 +1,5 @@
 {
-    "money": 2000.0,
-    "profit": 0.0
+    "money": 2500,
+    "profit": 0,
+    "cooldown": 1000
 }

@@ -37,3 +37,7 @@ class Dealer:
     def get_score(self, dealers_first: bool = False):
         if dealers_first: return card_value(self.cards[0])
         else: return calculate_score(self.cards)
+
+class Settings:
+    def __init__(self, cooldown):
+        self.cooldown = cooldown

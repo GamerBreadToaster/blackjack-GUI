@@ -1,6 +1,6 @@
 import tkinter as tk
 import random
-from modules.players import Player, Dealer
+from modules.players import *
 from modules.image_adjuster import get_image
 from modules.info_getter import get_info, set_info
 
@@ -50,7 +50,7 @@ def reset():
     player.double = False
     result_button.destroy()
     root.unbind("<Return>")
-    set_info(player)
+    set_info(player, settings)
 
     # labels and buttons
     result_label.config(text="")
@@ -62,7 +62,7 @@ def reset():
     bet_input = tk.Entry(controls_frame, width=10)
     bet_button = tk.Button(controls_frame, text="Bet", command=get_bet)
     if player.get_money() == 0:
-        free_money_button = tk.Button(root, text="free $1000", command=lambda: give_money(free_money_button))
+        free_money_button = tk.Button(root, text="Use your credit card: $1000", command=lambda: give_money(free_money_button))
         free_money_button.pack()
 
     # bets
@@ -120,7 +120,7 @@ def double():
     player.cards.append(deck.pop())
     player.double = True
     sync_cards(True)
-    root.after(1000, stand)
+    root.after(settings.cooldown, stand)
 
 def check_scores():
     if player.get_score() > 21:
@@ -149,14 +149,14 @@ def dealer_hitting():
         return
     dealer.cards.append(deck.pop())
     sync_cards()
-    root.after(900, dealer_hitting)
+    root.after(settings.cooldown, dealer_hitting)
 
 def stand():
     clear_buttons()
     sync_cards() # reveals the second card of dealer
 
     # need to use this to slowly reveal the dealers' cards. time.sleep won't work.
-    root.after(900, dealer_hitting)
+    root.after(settings.cooldown, dealer_hitting)
 
 # made by AI, was lazy, this is a clean fix for blackjack
 def check_blackjacks():
@@ -176,7 +176,7 @@ def check_blackjacks():
 
     # 2. Schedule the reveal AND the resolution
     # We delay the entire sequence of events by 1 second (1000 ms)
-    root.after(1000, lambda: finish_blackjack_round(player_has_bj, dealer_has_bj))
+    root.after(settings.cooldown, lambda: finish_blackjack_round(player_has_bj, dealer_has_bj))
 
 def finish_blackjack_round(player_has_bj, dealer_has_bj):
     # This function runs 1 second later
@@ -206,7 +206,7 @@ def finish_blackjack_round(player_has_bj, dealer_has_bj):
 def give_money(button: tk.Button):
     player.set_money(1000)
     button.destroy()
-    money_label.config(text="Money: $1000")
+    money_label.config(text="Cash: $1000")
 
 def start_game():
     global deck, hit_button, stand_button, double_button
@@ -254,7 +254,7 @@ def get_bet(event = None):
         result_label.config(text = "Can't bet nothing or less than nothing!")
         return
     player.adjust_money(-player.bet)
-    set_info(player)
+    set_info(player, settings)
     result_label.config(text="") # remove error text if needed
     start_game()
 
@@ -262,6 +262,7 @@ deck = []
 dealer = Dealer()
 data = get_info()
 player = Player(data["money"], data["profit"])
+settings = Settings(data["cooldown"])
 
 # root
 root = tk.Tk()
