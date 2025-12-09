@@ -76,7 +76,7 @@ def reset():
     bet_button.pack(side="left")
     bet_input.bind("<Return>", get_bet)
     bet_input.bind("<F4>", get_bet)
-    bet_input.insert(0, f"{player.bet}")
+    bet_input.insert(0, f"{player.original_bet}")
     bet_input.focus_set()
     bet_input.selection_range(0, tk.END)
 
@@ -222,13 +222,13 @@ def start_game():
     clear_cards(dealer.frame)
     clear_cards(controls_frame)
 
-    hit_button = tk.Button(controls_frame, text="Hit\nF1", command=lambda: hit())
-    stand_button = tk.Button(controls_frame, text="Stand\nF2", command=lambda: stand())
+    hit_button = tk.Button(controls_frame, text="Hit\nF3", command=lambda: hit())
+    stand_button = tk.Button(controls_frame, text="Stand\nF1", command=lambda: stand())
     if player.get_money() >= player.bet:
-        double_button = tk.Button(controls_frame, text="Double\nF3", command=double)
+        double_button = tk.Button(controls_frame, text="Double\nF2", command=double)
         double_button.pack()
         root.bind('d', lambda event: double())
-        root.bind('<F3>', lambda event: double())
+        root.bind('<F2>', lambda event: double())
     hit_button.pack(side="right")
     stand_button.pack(side="left")
 
@@ -264,6 +264,7 @@ def get_bet(event = None):
     if player.bet <= 0:
         result_label.config(text = "Can't bet nothing or less than nothing!")
         return
+    player.original_bet = player.bet
     root.unbind("<Return>")
     root.unbind("<F4>")
     player.adjust_money(-player.bet)

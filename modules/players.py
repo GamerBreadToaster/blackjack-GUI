@@ -8,6 +8,7 @@ class Player:
         self.__money = money
         self.__profit = profit
         self.bet = 0
+        self.original_bet = 0
         self.double = False
 
     def get_score(self):
