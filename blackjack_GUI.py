@@ -41,10 +41,6 @@ def clear_buttons():
     root.unbind("s")
     root.unbind("h")
     root.unbind("d")
-    root.unbind("<space>")
-    root.unbind("<F1>")
-    root.unbind("<F2>")
-    root.unbind("<F3>")
 
 def reset():
     # resets the game back to the betting fase
@@ -54,7 +50,6 @@ def reset():
     player.double = False
     result_button.destroy()
     root.unbind("<Return>")
-    root.unbind("<F4>")
     set_info(player, settings)
 
     # labels and buttons
@@ -65,7 +60,7 @@ def reset():
     profit_label.config(text=f"Profit: ${player.get_profit()}")
     bet_label = tk.Label(controls_frame, text="$")
     bet_input = tk.Entry(controls_frame, width=10)
-    bet_button = tk.Button(controls_frame, text="Bet\nF4", command=get_bet)
+    bet_button = tk.Button(controls_frame, text="Bet", command=get_bet)
     if player.get_money() == 0:
         free_money_button = tk.Button(root, text="Use your credit card: $1000", command=lambda: give_money(free_money_button))
         free_money_button.pack()
@@ -75,7 +70,6 @@ def reset():
     bet_input.pack(side="left")
     bet_button.pack(side="left")
     bet_input.bind("<Return>", get_bet)
-    bet_input.bind("<F4>", get_bet)
     bet_input.insert(0, f"{player.bet}")
     bet_input.focus_set()
     bet_input.selection_range(0, tk.END)
@@ -85,9 +79,8 @@ def game_over():
     global result_button
     clear_buttons()
     # buttons will already be destroyed at stand()
-    result_button = tk.Button(result_frame, text="continue\nF4", command=reset)
+    result_button = tk.Button(result_frame, text="continue", command=reset)
     root.bind("<Return>", lambda event: reset())
-    root.bind("<F4>", lambda event: reset())
     result_button.pack()
 
 def sync_cards(dealers_first: bool = False):
@@ -222,21 +215,17 @@ def start_game():
     clear_cards(dealer.frame)
     clear_cards(controls_frame)
 
-    hit_button = tk.Button(controls_frame, text="Hit\nF1", command=lambda: hit())
-    stand_button = tk.Button(controls_frame, text="Stand\nF2", command=lambda: stand())
+    hit_button = tk.Button(controls_frame, text="Hit", command=lambda: hit())
+    stand_button = tk.Button(controls_frame, text="Stand", command=lambda: stand())
     if player.get_money() >= player.bet:
-        double_button = tk.Button(controls_frame, text="Double\nF3", command=double)
+        double_button = tk.Button(controls_frame, text="Double", command=double)
         double_button.pack()
         root.bind('d', lambda event: double())
-        root.bind('<F3>', lambda event: double())
     hit_button.pack(side="right")
     stand_button.pack(side="left")
 
     root.bind('h', lambda event: hit())
-    root.bind('<F3>', lambda event: hit())
     root.bind('s', lambda event: stand())
-    root.bind('<space>', lambda event: stand())
-    root.bind('<F1>', lambda event: stand())
     screen_size['width'] = 500
     root.geometry(f"{screen_size['width']}x{screen_size['height']}")
     root.update()
@@ -264,8 +253,6 @@ def get_bet(event = None):
     if player.bet <= 0:
         result_label.config(text = "Can't bet nothing or less than nothing!")
         return
-    root.unbind("<Return>")
-    root.unbind("<F4>")
     player.adjust_money(-player.bet)
     set_info(player, settings)
     result_label.config(text="") # remove error text if needed
