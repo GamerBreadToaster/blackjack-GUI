@@ -6,7 +6,7 @@ After you have to download some modules. You can do this by opening a terminal i
 windows:
 `py -m pip install -r requirements.txt`
 
-linux:
+linux and mac:
 `python3 -m pip install -r requirements.txt`
 
 Then open blackjack_GUI.py to have some fun!
