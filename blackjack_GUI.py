@@ -56,7 +56,7 @@ def reset():
     result_label.config(text="")
     dealer_score_label.config(text="Dealer Score:")
     player_score_label.config(text="Player Score:")
-    money_label.config(text=f"Money: ${player.get_money()}")
+    money_label.config(text=f"Cash: ${player.get_money()}")
     profit_label.config(text=f"Profit: ${player.get_profit()}")
     bet_label = tk.Label(controls_frame, text="$")
     bet_input = tk.Entry(controls_frame, width=10)
@@ -64,6 +64,8 @@ def reset():
     if player.get_money() == 0:
         free_money_button = tk.Button(root, text="free $1000", command=lambda: give_money(free_money_button))
         free_money_button.pack()
+
+    # bets
     bet_label.pack(side="left")
     bet_input.pack(side="left")
     bet_button.pack(side="left")
@@ -94,7 +96,7 @@ def sync_cards(dealers_first: bool = False):
         add_card(card, player.frame)
     dealer_score_label.config(text=f"Dealer Score: {dealer.get_score(dealers_first)}")
     player_score_label.config(text=f"Player Score: {player.get_score()}")
-    money_label.config(text=f"Money: ${player.get_money()}")
+    money_label.config(text=f"Cash: ${player.get_money()}")
     profit_label.config(text=f"Profit: ${player.get_profit()}")
 
 def hit():
@@ -287,8 +289,12 @@ result_label.pack(side="top")
 result_button = tk.Button(result_frame, text="continue")
 result_button.pack()
 
-money_label = tk.Label(root, text=f"Money: ${player.get_money()}")
-profit_label = tk.Label(root, text=f"Profit: ${player.get_profit()}")
+
+# money frame
+money_frame = tk.Frame(root)
+money_frame.pack(side="bottom")
+money_label = tk.Label(money_frame, text=f"Cash: ${player.get_money()}")
+profit_label = tk.Label(money_frame, text=f"Profit: ${player.get_profit()}")
 profit_label.pack(side="bottom")
 money_label.pack(side="bottom")
 
