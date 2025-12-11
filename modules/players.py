@@ -7,6 +7,7 @@ class Player:
         self.cards = []
         self.__money = money
         self.__profit = profit
+        self.__session_profit = 0
         self.bet = 0
         self.original_bet = 0
         self.double = False
@@ -16,6 +17,7 @@ class Player:
 
     def adjust_profit(self, value):
         self.__profit += value
+        self.__session_profit += value
 
     def set_money(self, value: float):
         self.__money = value
@@ -27,8 +29,9 @@ class Player:
     def get_money(self):
         return self.__money
 
-    def get_profit(self):
-        return self.__profit
+    def get_profit(self, session: bool = False):
+        if not session: return self.__profit
+        else: return self.__session_profit
 
 class Dealer:
     def __init__(self, frame = None):

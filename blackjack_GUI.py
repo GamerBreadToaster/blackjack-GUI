@@ -64,6 +64,7 @@ def reset():
     player_score_label.config(text="Player Score:")
     money_label.config(text=f"Cash: ${player.get_money()}")
     profit_label.config(text=f"Profit: ${player.get_profit()}")
+    session_profit_label.config(text=f"Session profit: ${player.get_profit(True)}")
     bet_label = tk.Label(controls_frame, text="$")
     bet_input = tk.Entry(controls_frame, width=10)
     bet_button = tk.Button(controls_frame, text="Bet\nF4", command=get_bet)
@@ -108,6 +109,7 @@ def sync_cards(dealers_first: bool = False):
     player_score_label.config(text=f"Player Score: {player.get_score()}")
     money_label.config(text=f"Cash: ${player.get_money()}")
     profit_label.config(text=f"Profit: ${player.get_profit()}")
+    session_profit_label.config(text=f"Session profit: ${player.get_profit(True)}")
 
 def hit():
     try:double_button.destroy()
@@ -318,6 +320,8 @@ bottom_frame = tk.Frame(root)
 bottom_frame.pack(side="bottom", fill="x", pady=10)
 money_label = tk.Label(bottom_frame, text=f"Cash: ${player.get_money()}")
 profit_label = tk.Label(bottom_frame, text=f"Profit: ${player.get_profit()}")
+session_profit_label = tk.Label(bottom_frame, text=f"Session profit: ${player.get_profit(True)}")
+session_profit_label.pack(side="bottom")
 profit_label.pack(side="bottom")
 money_label.pack(side="bottom")
 reset() # deleted duplicate code
