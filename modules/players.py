@@ -23,6 +23,7 @@ class Player:
         self.__money = value
 
     def adjust_money(self, value):
+        value = round(value, 2)
         self.__money += value
         self.adjust_profit(value)
 
