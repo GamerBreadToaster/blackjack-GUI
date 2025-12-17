@@ -12,6 +12,7 @@ cards_list = ['Ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Quee
 deck_blueprint = [(card, category) for category in card_categories for card in cards_list]
 
 # def's
+# cannot remove it from main
 def add_card(card, frame):
     if not card == "joker":
         image = get_image(card[0], card[1])
@@ -170,7 +171,7 @@ def stand():
     # need to use this to slowly reveal the dealers' cards. time.sleep won't work.
     root.after(settings.cooldown, dealer_hitting)
 
-# made by AI, was lazy, this is a clean fix for blackjack
+# made by AI, was lazy, this is a clean fix for finding blackjacks
 def check_blackjacks():
     player_score = player.get_score()
     dealer_score = dealer.get_score()
@@ -267,8 +268,8 @@ def get_bet(event = None):
     if player.bet > player.get_money():
         result_label.config(text = "Can't bet more than you have!")
         return
-    if player.bet <= 0:
-        result_label.config(text = "Can't bet nothing or less than nothing!")
+    if player.bet <= 0.01:
+        result_label.config(text = "You should bet at least 1 cent!")
         return
     player.original_bet = player.bet
     root.unbind("<Return>")
