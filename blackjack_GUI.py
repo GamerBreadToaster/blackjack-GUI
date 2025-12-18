@@ -60,7 +60,7 @@ def reset():
     set_info(player)
 
     # labels and buttons
-    result_label.config(text="")
+    result_label.config(text="", font=("Arial", 14, "bold"), fg="red")
     dealer_score_label.config(text="Dealer Score:")
     player_score_label.config(text="Player Score:")
     money_label.config(text=f"Cash: ${player.get_money()}")
@@ -261,7 +261,7 @@ def start_game():
 
 def get_bet(event = None):
     try:
-        player.bet = int(bet_input.get())
+        player.bet = float(bet_input.get())
     except Exception as err:
         result_label.config(text = f"{err}")
         return
@@ -307,7 +307,7 @@ controls_frame.pack(fill="x")
 
 result_frame = tk.Frame(root)
 result_frame.pack()
-result_label = tk.Label(result_frame, text="", name="result_label")
+result_label = tk.Label(result_frame, font=("Arial", 14, "bold"), fg="red", name="result_label")
 result_label.pack(side="top")
 result_button = tk.Button(result_frame, text="continue")
 result_button.pack()

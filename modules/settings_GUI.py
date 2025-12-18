@@ -10,7 +10,7 @@ def settings_gui(settings: Settings) -> Settings:
             return
         set_settings(settings)
         root.destroy()
-    root = tk.Tk()
+    root = tk.Toplevel()
     root.geometry("500x200")
 
     cooldown_frame = tk.Frame(root)
