@@ -4,6 +4,7 @@ from modules.classes import *
 from modules.image_adjuster import get_image
 from modules.file_adjuster import get_info, set_info, get_settings
 from modules.settings_GUI import settings_gui
+from modules.stats_GUI import stats_gui
 
 # variables
 screen_size = {"width" : 500, "height" : 800}
@@ -84,6 +85,8 @@ def reset():
     bet_input.selection_range(0, tk.END)
     settings_button = tk.Button(bottom_frame, text="settings", command=edit_settings)
     settings_button.place(relx=1.0, rely=1.0, anchor="se", x=-10, y=-5)
+    stats_button = tk.Button(bottom_frame, text="stats", command=lambda: stats_gui(player.stats))
+    stats_button.place(relx=1.0, rely=1.0, anchor="sw", x=-490, y=-5)
 
 def game_over():
     # resetting screen to prevent any more button hitting
@@ -132,6 +135,7 @@ def double():
     player.bet = player.bet*2
     player.cards.append(deck.pop())
     player.double = True
+    player.stats.double_downs += 1
     sync_cards(True)
     root.after(settings.cooldown, stand)
 
@@ -139,21 +143,30 @@ def check_scores():
     if player.get_score() > 21:
         print("score over 21")
         result_label.config(text="You are bust! You lose!")
+        player.stats.player_bust += 1
+        player.stats.total_lost += player.bet
     elif dealer.get_score() > 21:
         print("dealer score over 21")
         result_label.config(text=f"Dealers bust! You win ${player.bet*2}!")
         player.adjust_money(player.bet*2)
+        player.stats.dealer_bust += 1
+        player.stats.total_won += player.bet
     elif player.get_score() == dealer.get_score():
         print("push")
         result_label.config(text="Push! You get your money back!")
         player.adjust_money(player.bet)
+        player.stats.ties += 1
     elif player.get_score() > dealer.get_score():
         print("score is higher")
         result_label.config(text=f"Your score is higher! You win ${player.bet*2}!")
         player.adjust_money(player.bet*2)
+        player.stats.higher_score += 1
+        player.stats.total_won += player.bet
     elif player.get_score() < dealer.get_score():
         print("score is lower")
         result_label.config(text="Your score is lower! You lose!")
+        player.stats.lower_score += 1
+        player.stats.total_lost += player.bet
     game_over()
 
 def dealer_hitting():
@@ -201,16 +214,21 @@ def finish_blackjack_round(player_has_bj, dealer_has_bj):
     if player_has_bj and dealer_has_bj:
         result_label.config(text="Both have Blackjack! Push!")
         print("blackjack push")
+        player.stats.ties += 1
         player.adjust_money(player.bet)
 
     elif player_has_bj:
         win_amount = player.bet + (player.bet * 1.5)
         result_label.config(text=f"Blackjack! You win ${int(win_amount)}!")
         print("player blackjack")
+        player.stats.won_by_blackjack += 1
+        player.stats.total_won += win_amount
         player.adjust_money(win_amount)
 
     elif dealer_has_bj:
         result_label.config(text="Dealer has Blackjack! You lose!")
+        player.stats.total_lost += player.bet
+        player.stats.lost_by_blackjack += 1
         print("dealer blackjack")
 
     # C. Trigger Game Over
@@ -218,6 +236,7 @@ def finish_blackjack_round(player_has_bj, dealer_has_bj):
 
 def give_money(button: tk.Button):
     player.set_money(1000)
+    player.stats.used_credit_card += 1
     button.destroy()
     money_label.config(text="Cash: $1000")
 
@@ -283,7 +302,8 @@ deck = []
 dealer = Dealer()
 data = get_info()
 data_settings = get_settings()
-player = Player(data["money"], data["profit"])
+stats_data = data.get("stats", {})
+player = Player(data["money"], data["profit"], Stats(**stats_data))
 settings = Settings(data_settings["cooldown"], data_settings["deck_amount"])
 
 # root

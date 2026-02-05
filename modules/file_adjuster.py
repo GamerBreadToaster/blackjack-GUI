@@ -17,7 +17,8 @@ def get_info():
 def set_info(player: Player):
     data = {
         "money": player.get_money(),
-        "profit": player.get_profit()
+        "profit": player.get_profit(),
+        "stats": player.stats.to_dict()
     }
     with open("save.json", "w") as file:
         json.dump(data, file, indent=2)
