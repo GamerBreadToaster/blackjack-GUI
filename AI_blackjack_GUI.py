@@ -1,7 +1,7 @@
 import tkinter as tk
 import random
 import time
-from modules.players import Player, Dealer, Settings
+from modules.classes import Player, Dealer, Settings
 from modules.image_adjuster import get_image
 from modules.file_adjuster import get_info, set_info, get_settings
 from modules.settings_GUI import settings_gui

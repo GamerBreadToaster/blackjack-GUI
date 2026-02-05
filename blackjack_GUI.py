@@ -1,6 +1,6 @@
 import tkinter as tk
 import random
-from modules.players import *
+from modules.classes import *
 from modules.image_adjuster import get_image
 from modules.file_adjuster import get_info, set_info, get_settings
 from modules.settings_GUI import settings_gui

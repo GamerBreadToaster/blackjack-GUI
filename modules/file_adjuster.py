@@ -1,4 +1,4 @@
-from modules.players import Player, Settings
+from modules.classes import Player, Settings
 import json
 
 def get_info():

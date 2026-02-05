@@ -1,4 +1,4 @@
-from modules.players import Settings
+from modules.classes import Settings
 from modules.file_adjuster import set_settings
 import tkinter as tk
 def settings_gui(settings: Settings) -> Settings:
