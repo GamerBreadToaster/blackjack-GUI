@@ -222,7 +222,7 @@ def finish_blackjack_round(player_has_bj, dealer_has_bj):
         result_label.config(text=f"Blackjack! You win ${int(win_amount)}!")
         print("player blackjack")
         player.stats.won_by_blackjack += 1
-        player.stats.total_won += win_amount
+        player.stats.total_won += player.bet * 1.5
         player.adjust_money(win_amount)
 
     elif dealer_has_bj:
