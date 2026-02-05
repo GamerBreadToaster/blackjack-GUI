@@ -17,7 +17,7 @@ class Stats:
         self.double_downs = double_downs
 
     def total_games(self) -> int:
-        return self.lost_by_blackjack + self.won_by_blackjack + self.higher_score + self.lower_score + self.ties
+        return self.total_games_won() + self.total_games_lost() + self.ties
 
     def total_games_won(self):
         return self.won_by_blackjack + self.higher_score + self.dealer_bust
