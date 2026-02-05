@@ -249,7 +249,7 @@ def start_game():
     root.update()
 
     # reset deck and cards and deal cards
-    deck = deck_blueprint.copy() * 6 # variable numbers of decks
+    deck = deck_blueprint.copy() * settings.deck_amount # variable numbers of decks
     random.shuffle(deck)
     dealer.cards = []
     player.cards = []
@@ -284,7 +284,7 @@ dealer = Dealer()
 data = get_info()
 data_settings = get_settings()
 player = Player(data["money"], data["profit"])
-settings = Settings(data_settings["cooldown"])
+settings = Settings(data_settings["cooldown"], data_settings["deck_amount"])
 
 # root
 root = tk.Tk()

@@ -44,5 +44,6 @@ class Dealer:
         else: return calculate_score(self.cards)
 
 class Settings:
-    def __init__(self, cooldown):
+    def __init__(self, cooldown: int, amount: int):
         self.cooldown = cooldown
+        self.deck_amount = amount

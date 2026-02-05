@@ -25,7 +25,8 @@ def set_info(player: Player):
 
 def set_settings(settings: Settings):
     data = {
-        "cooldown": settings.cooldown
+        "cooldown": settings.cooldown,
+        "deck_amount": settings.deck_amount
     }
     with open("settings.json", "w") as file:
         json.dump(data, file, indent=2)
@@ -38,7 +39,8 @@ def get_settings():
     except:
         with open("settings.json", "w") as file:
             data = {
-                "cooldown": 750
+                "cooldown": 750,
+                "deck_amount": 6
             }
             json.dump(data, file, indent=2)
             return data
