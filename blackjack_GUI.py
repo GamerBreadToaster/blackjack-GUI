@@ -214,7 +214,7 @@ def finish_blackjack_round(player_has_bj, dealer_has_bj):
     if player_has_bj and dealer_has_bj:
         result_label.config(text="Both have Blackjack! Push!")
         print("blackjack push")
-        player.stats.ties += 1
+        player.stats.blackjack_push += 1
         player.adjust_money(player.bet)
 
     elif player_has_bj:

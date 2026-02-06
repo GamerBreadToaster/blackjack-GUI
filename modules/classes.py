@@ -3,7 +3,7 @@ from modules.score_calc import calculate_score, card_value
 # stats
 class Stats:
     def __init__(self, total_won: float = 0.0, total_lost: float = 0.0, ties: int = 0, won_by_blackjack: int = 0, lost_by_blackjack: int = 0,
-                 higher_score: int = 0, lower_score: int = 0, used_credit_card: int = 0, double_downs: int = 0, player_bust: int = 0, dealer_bust: int = 0, **kwargs):
+                 higher_score: int = 0, lower_score: int = 0, used_credit_card: int = 0, double_downs: int = 0, player_bust: int = 0, dealer_bust: int = 0, blackjack_push: int = 0, **kwargs):
         self.total_won = total_won
         self.total_lost = total_lost
         self.won_by_blackjack = won_by_blackjack
@@ -15,6 +15,7 @@ class Stats:
         self.used_credit_card = used_credit_card
         self.ties = ties
         self.double_downs = double_downs
+        self.blackjack_push = blackjack_push
 
     def total_games(self) -> int:
         return self.total_games_won() + self.total_games_lost() + self.ties
