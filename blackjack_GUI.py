@@ -170,7 +170,7 @@ def check_scores():
     game_over()
 
 def dealer_hitting():
-    if dealer.get_score() >= 17:
+    if dealer.get_score() >= settings.dealer_stop:
         check_scores()
         return
     dealer.cards.append(deck.pop())
@@ -304,7 +304,7 @@ data = get_info()
 data_settings = get_settings()
 stats_data = data.get("stats", {})
 player = Player(data["money"], data["profit"], Stats(**stats_data))
-settings = Settings(data_settings["cooldown"], data_settings["deck_amount"])
+settings = Settings(**data_settings)
 
 # root
 root = tk.Tk()

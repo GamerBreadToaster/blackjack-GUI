@@ -18,13 +18,17 @@ def settings_gui(settings: Settings) -> Settings:
         try:
             settings.cooldown = int(cooldown_entry.get())
             settings.deck_amount = int(deck_amount_entry.get())
+            if settings.deck_amount < 1:
+                raise Exception("Deck amount should be at least one (1)!")
+            settings.dealer_stop = int(dealer_stop_entry.get())
+            if settings.dealer_stop < 0:
+                raise Exception("dealer stop should be at least one (1)!")
         except Exception as err:
             error_label.config(text=f"{err}")
             return
         set_settings(settings)
         window.destroy()
     window = tk.Toplevel()
-    window.geometry("500x200")
 
     cooldown_entry = __add_labeled_field(
         window,
@@ -36,8 +40,14 @@ def settings_gui(settings: Settings) -> Settings:
         "Total amount of decks used: \n(Gets shuffled after every round)",
         settings.deck_amount
     )
+    dealer_stop_entry = __add_labeled_field(
+        window,
+        "Dealer stops at this score: \n(will break balance unless 17)",
+        settings.dealer_stop
+    )
 
     error_label = tk.Label(window)
+    error_label.pack()
 
     save_button = tk.Button(window, text="save settings", command=on_save)
     save_button.pack(side="bottom")

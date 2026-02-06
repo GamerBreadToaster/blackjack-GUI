@@ -78,6 +78,11 @@ class Dealer:
 
 # settings
 class Settings:
-    def __init__(self, cooldown: int, amount: int):
+    def __init__(self, cooldown: int = 0, deck_amount: int = 0, dealer_stop: int = 17, **kwargs):
         self.cooldown = cooldown
-        self.deck_amount = amount
+        self.deck_amount = deck_amount
+        self.dealer_stop = dealer_stop
+
+    def to_dict(self):
+        """Helper to turn this object into a dictionary automatically."""
+        return vars(self)

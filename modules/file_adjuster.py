@@ -25,10 +25,7 @@ def set_info(player: Player):
         return None
 
 def set_settings(settings: Settings):
-    data = {
-        "cooldown": settings.cooldown,
-        "deck_amount": settings.deck_amount
-    }
+    data = settings.to_dict()
     with open("settings.json", "w") as file:
         json.dump(data, file, indent=2)
         return None
