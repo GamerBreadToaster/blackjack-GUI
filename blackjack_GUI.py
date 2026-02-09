@@ -71,8 +71,8 @@ def reset():
     bet_input = tk.Entry(controls_frame, width=10)
     bet_button = tk.Button(controls_frame, text="Bet\nF4", command=get_bet)
     if player.get_money() == 0:
-        free_money_button = tk.Button(root, text="Use your credit card: $1000", command=lambda: give_money(free_money_button))
-        free_money_button.pack()
+        credit_card_button = tk.Button(root, text=f"Use your credit card: ${settings.credit_card_debt}", command=lambda: give_money(credit_card_button))
+        credit_card_button.pack()
 
     # bets
     bet_label.pack(side="left")
