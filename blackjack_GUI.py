@@ -235,10 +235,10 @@ def finish_blackjack_round(player_has_bj, dealer_has_bj):
     game_over()
 
 def give_money(button: tk.Button):
-    player.set_money(1000)
+    player.set_money(settings.credit_card_debt)
     player.stats.used_credit_card += 1
     button.destroy()
-    money_label.config(text="Cash: $1000")
+    money_label.config(text=f"Cash: ${settings.credit_card_debt}")
 
 def start_game():
     global deck, hit_button, stand_button, double_button

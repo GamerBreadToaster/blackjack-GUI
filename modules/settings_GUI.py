@@ -21,8 +21,11 @@ def settings_gui(settings: Settings) -> Settings:
             if settings.deck_amount < 1:
                 raise Exception("Deck amount should be at least one (1)!")
             settings.dealer_stop = int(dealer_stop_entry.get())
-            if settings.dealer_stop < 0:
+            if settings.dealer_stop < 1:
                 raise Exception("dealer stop should be at least one (1)!")
+            settings.credit_card_debt = float(credit_card_entry.get())
+            if settings.credit_card_debt < 1:
+                raise Exception("Credit card usage should at least be one (1)")
         except Exception as err:
             error_label.config(text=f"{err}")
             return
@@ -44,6 +47,11 @@ def settings_gui(settings: Settings) -> Settings:
         window,
         "Dealer stops at this score: \n(will break balance unless 17)",
         settings.dealer_stop
+    )
+    credit_card_entry = __add_labeled_field(
+        window,
+        "How much money you'll take from your credit card:",
+        settings.credit_card_debt
     )
 
     error_label = tk.Label(window)
