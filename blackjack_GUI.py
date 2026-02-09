@@ -58,7 +58,6 @@ def reset():
     result_button.destroy()
     root.unbind("<Return>")
     root.unbind("<F4>")
-    set_info(player)
 
     # labels and buttons
     result_label.config(text="", font=("Arial", 14, "bold"), fg="red")
@@ -97,6 +96,7 @@ def game_over():
     root.bind("<Return>", lambda event: reset())
     root.bind("<F4>", lambda event: reset())
     result_button.pack()
+    set_info(player)
 
 def sync_cards(dealers_first: bool = False):
     clear_cards(player.frame)
@@ -298,6 +298,14 @@ def get_bet(event = None):
     result_label.config(text="") # remove error text if needed
     start_game()
 
+def on_close():
+    if not bet_input.winfo_exists(): # if the betting button doesn't exist
+        player.stats.total_lost += player.bet
+        player.stats.player_bust += 1
+        set_info(player)
+    root.destroy()
+
+
 deck = []
 dealer = Dealer()
 data = get_info()
@@ -310,6 +318,7 @@ settings = Settings(**data_settings)
 root = tk.Tk()
 root.title("Blackjack")
 root.geometry(f"{screen_size['width']}x{screen_size['height']}")
+root.protocol("WM_DELETE_WINDOW", on_close) # make sure closing the program counts as folding
 
 # frames
 dealer.frame = tk.Frame(root, bg="green", pady=20)
