@@ -44,5 +44,9 @@ def stats_gui(stats: Stats):
     blackjack_ties_label.pack()
     total_games_label = tk.Label(window, text=f"Total games played: {stats.total_games()}")
     total_games_label.pack()
+    winstreak_label = tk.Label(window, text=f"Current winstreak: {stats.winstreak} wins")
+    winstreak_label.pack()
+    hit_21_label = tk.Label(window, text=f"Total times you hit exactly 21: {stats.hit_21}")
+    hit_21_label.pack()
 
     window.mainloop()

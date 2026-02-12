@@ -124,6 +124,7 @@ def hit():
         sync_cards(True)
     # check for 21 and higher after grabbing cards
     if player.get_score() == 21:
+        player.stats.hit_21 += 1
         stand()
     if player.get_score() > 21:
         sync_cards(False)
@@ -145,12 +146,14 @@ def check_scores():
         result_label.config(text="You are bust! You lose!")
         player.stats.player_bust += 1
         player.stats.total_lost += player.bet
+        player.stats.adjust_winstreak(True)
     elif dealer.get_score() > 21:
         print("dealer score over 21")
         result_label.config(text=f"Dealers bust! You win ${player.bet*2}!")
         player.adjust_money(player.bet*2)
         player.stats.dealer_bust += 1
         player.stats.total_won += player.bet
+        player.stats.adjust_winstreak()
     elif player.get_score() == dealer.get_score():
         print("push")
         result_label.config(text="Push! You get your money back!")
@@ -162,11 +165,13 @@ def check_scores():
         player.adjust_money(player.bet*2)
         player.stats.higher_score += 1
         player.stats.total_won += player.bet
+        player.stats.adjust_winstreak()
     elif player.get_score() < dealer.get_score():
         print("score is lower")
         result_label.config(text="Your score is lower! You lose!")
         player.stats.lower_score += 1
         player.stats.total_lost += player.bet
+        player.stats.adjust_winstreak(True)
     game_over()
 
 def dealer_hitting():
@@ -222,6 +227,7 @@ def finish_blackjack_round(player_has_bj, dealer_has_bj):
         result_label.config(text=f"Blackjack! You win ${int(win_amount)}!")
         print("player blackjack")
         player.stats.won_by_blackjack += 1
+        player.stats.adjust_winstreak()
         player.stats.total_won += win_amount - player.bet
         player.adjust_money(win_amount)
 
@@ -229,6 +235,7 @@ def finish_blackjack_round(player_has_bj, dealer_has_bj):
         result_label.config(text="Dealer has Blackjack! You lose!")
         player.stats.total_lost += player.bet
         player.stats.lost_by_blackjack += 1
+        player.stats.adjust_winstreak(True)
         print("dealer blackjack")
 
     # C. Trigger Game Over
