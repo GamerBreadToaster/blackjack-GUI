@@ -2,10 +2,10 @@ import tkinter as tk
 import random
 from modules.classes import *
 from modules.image_adjuster import get_image
-from modules.file_adjuster import get_info, set_info, get_settings
+from modules.file_adjuster import get_info, set_info, get_settings, add_history
 from modules.settings_GUI import settings_gui
 from modules.stats_GUI import stats_gui
-from modules.result_checking import check_scores
+from modules.result_checking import check_scores, check_blackjack
 
 # variables
 screen_size = {"width" : 500, "height" : 800}
@@ -88,7 +88,7 @@ def reset():
     stats_button = tk.Button(bottom_frame, text="stats", command=lambda: stats_gui(player.stats))
     stats_button.place(relx=1.0, rely=1.0, anchor="sw", x=-490, y=-5)
 
-def game_over():
+def game_over(result: Result):
     # resetting screen to prevent any more button hitting
     global result_button
     clear_buttons()
@@ -98,6 +98,7 @@ def game_over():
     root.bind("<F4>", lambda event: reset())
     result_button.pack()
     set_info(player)
+    add_history(result)
 
 def sync_cards(dealers_first: bool = False):
     clear_cards(player.frame)
@@ -188,54 +189,45 @@ def stand():
     # need to use this to slowly reveal the dealers' cards. time.sleep won't work.
     root.after(settings.cooldown, dealer_hitting)
 
-# made by AI, was lazy, this is a clean fix for finding blackjacks
-def check_blackjacks():
-    player_score = player.get_score()
-    dealer_score = dealer.get_score()
-
-    player_has_bj = player_score == 21
-    dealer_has_bj = dealer_score == 21
-
-    if not player_has_bj and not dealer_has_bj:
+# made by AI, just checks for blackjack
+def first_check_blackjacks():
+    if not player.get_score() == 21 and not dealer.get_score() == 21:
         return
-
     # --- Someone has Blackjack ---
 
     # 1. Clean up buttons immediately
     clear_buttons()
 
     # 2. Schedule the reveal AND the resolution
-    # We delay the entire sequence of events by 1 second (1000 ms)
-    root.after(settings.cooldown, lambda: finish_blackjack_round(player_has_bj, dealer_has_bj))
+    root.after(settings.cooldown, lambda: finish_blackjack_round())
 
-def finish_blackjack_round(player_has_bj, dealer_has_bj):
+def finish_blackjack_round():
     # This function runs 1 second later
 
     # A. Reveal the card first
     sync_cards(dealers_first=False)
 
     # B. THEN calculate wins/losses
-    if player_has_bj and dealer_has_bj:
-        result_label.config(text="Both have Blackjack! Push!")
-        print("blackjack push")
-        player.stats.blackjack_push += 1
-        player.adjust_money(player.bet)
-
-    elif player_has_bj:
-        win_amount = player.bet + (player.bet * 1.5)
-        result_label.config(text=f"Blackjack! You win ${int(win_amount)}!")
-        print("player blackjack")
-        player.stats.won_by_blackjack += 1
-        player.stats.adjust_winstreak()
-        player.stats.total_won += win_amount - player.bet
-        player.adjust_money(win_amount)
-
-    elif dealer_has_bj:
-        result_label.config(text="Dealer has Blackjack! You lose!")
-        player.stats.total_lost += player.bet
-        player.stats.lost_by_blackjack += 1
-        player.stats.adjust_winstreak(True)
-        print("dealer blackjack")
+    # made with my bare hands
+    result = check_blackjack(player, dealer)
+    result_label.config(text=result.get_result_string())
+    match result.get_win_type():
+        case ResultType.PUSH_BLACKJACK:
+            print("blackjack push")
+            player.stats.blackjack_push += 1
+            player.adjust_money(player.bet)
+        case ResultType.PLAYER_BLACKJACK:
+            win_amount = player.bet + (player.bet * 1.5)
+            player.stats.won_by_blackjack += 1
+            player.stats.adjust_winstreak()
+            player.stats.total_won += win_amount - player.bet
+            player.adjust_money(win_amount)
+            print("player blackjack")
+        case ResultType.DEALER_BLACKJACK:
+            player.stats.total_lost += player.bet
+            player.stats.lost_by_blackjack += 1
+            player.stats.adjust_winstreak(True)
+            print("dealer blackjack")
 
     # C. Trigger Game Over
     game_over()
@@ -282,7 +274,7 @@ def start_game():
         player.cards.append(deck.pop())
         dealer.cards.append(deck.pop())
     sync_cards(True)
-    check_blackjacks()
+    first_check_blackjacks()
 
 def get_bet(event = None):
     try:

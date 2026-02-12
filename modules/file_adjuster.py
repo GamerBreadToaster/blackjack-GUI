@@ -1,4 +1,6 @@
-from modules.classes import Player, Settings, Dealer
+import os.path
+
+from modules.classes import Player, Settings, Dealer, Result
 import json
 
 def get_info():
@@ -43,8 +45,19 @@ def get_settings():
             json.dump(data, file, indent=2)
             return data
 
-# def add_history(player: Player, dealer: Dealer, settings: Settings):
-#     try:
-#         with open("history.json", "rw") as file:
-#             pass
-#
+def add_history(result: Result):
+    # this saves a list of all played games
+    file_path = "history.json"
+
+    if os.path.exists(file_path):
+        with open(file_path, "r") as file:
+            try:
+                data = json.load(file)
+            except json.JSONDecodeError:
+                data = {"games": []}
+    else:
+        data = {"games": []}
+
+    data["games"].append(result.to_dict())
+    with open(file_path, "w") as file:
+        json.dump(data, file, indent=2)

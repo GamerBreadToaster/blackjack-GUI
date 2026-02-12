@@ -126,6 +126,7 @@ class Result:
 
     def set_win_type(self, win_type: ResultType):
         self.__win_type = win_type
+        self.set_result_string()
     def get_win_type(self) -> ResultType:
         return self.__win_type
     def get_result_string(self) -> str:
@@ -142,3 +143,13 @@ class Result:
             case ResultType.PLAYER_BLACKJACK: return f"Blackjack! You win ${int(self.bet + (self.bet * 1.5))}!"
             case ResultType.DEALER_BLACKJACK: return f"Dealer has Blackjack! You lose ${self.bet}!"
         return ""
+
+    def to_dict(self):
+        """Helper to turn this object into a dictionary automatically."""
+        return {
+            "player_score": self.player_score,
+            "dealer_score": self.dealer_score,
+            "bet": self.bet,
+            "win_type": str(self.get_win_type()),
+            "message": self.get_result_string()
+        }
