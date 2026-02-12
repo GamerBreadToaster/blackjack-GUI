@@ -1,11 +1,11 @@
 import tkinter as tk
 import random
-from modules.classes import *
-from modules.image_adjuster import get_image
-from modules.file_adjuster import get_info, set_info, get_settings, add_history
-from modules.settings_GUI import settings_gui
-from modules.stats_GUI import stats_gui
-from modules.result_checking import check_scores, check_blackjack
+from Modules.classes import *
+from Modules.image_adjuster import get_image
+from Modules.file_adjuster import get_info, set_info, get_settings, add_history
+from Modules.settings_GUI import settings_gui
+from Modules.stats_GUI import stats_gui
+from Modules.result_checking import check_scores, check_blackjack
 
 # variables
 screen_size = {"width" : 500, "height" : 800}
@@ -124,7 +124,7 @@ def hit():
     if player.get_score() <= 21:
         player.cards.append(deck.pop())
         sync_cards(True)
-    # check for 21 and higher after grabbing cards
+    # check for 21 and higher after grabbing Cards
     if player.get_score() == 21:
         player.stats.hit_21 += 1
         stand()
@@ -172,7 +172,7 @@ def final_check_scores():
             player.stats.lower_score += 1
             player.stats.total_lost += player.bet
             player.stats.adjust_winstreak(True)
-    game_over()
+    game_over(result)
 
 def dealer_hitting():
     if dealer.get_score() >= settings.dealer_stop:
@@ -186,7 +186,7 @@ def stand():
     clear_buttons()
     sync_cards() # reveals the second card of dealer
 
-    # need to use this to slowly reveal the dealers' cards. time.sleep won't work.
+    # need to use this to slowly reveal the dealers' Cards. time.sleep won't work.
     root.after(settings.cooldown, dealer_hitting)
 
 # made by AI, just checks for blackjack
@@ -230,7 +230,7 @@ def finish_blackjack_round():
             print("dealer blackjack")
 
     # C. Trigger Game Over
-    game_over()
+    game_over(result)
 
 def give_money(button: tk.Button):
     player.set_money(settings.credit_card_debt)
@@ -240,7 +240,7 @@ def give_money(button: tk.Button):
 
 def start_game():
     global deck, hit_button, stand_button, double_button
-    # clear cards and reset screen size
+    # clear Cards and reset screen size
     clear_cards(player.frame)
     clear_cards(dealer.frame)
     clear_cards(controls_frame)
@@ -265,7 +265,7 @@ def start_game():
     root.geometry(f"{screen_size['width']}x{screen_size['height']}")
     root.update()
 
-    # reset deck and cards and deal cards
+    # reset deck and Cards and deal Cards
     deck = deck_blueprint.copy() * settings.deck_amount # variable numbers of decks
     random.shuffle(deck)
     dealer.cards = []

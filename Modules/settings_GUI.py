@@ -1,5 +1,5 @@
-from modules.classes import Settings
-from modules.file_adjuster import set_settings
+from Modules.classes import Settings
+from Modules.file_adjuster import set_settings
 import tkinter as tk
 def settings_gui(settings: Settings) -> Settings:
     def __add_labeled_field(parent: tk.Misc, label_text: str, initial_value) -> tk.Entry:

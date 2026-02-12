@@ -49,14 +49,14 @@ def card_value(card):
     else:
         return int(card[0])
 
-# this converts the data of the cards in normal text for viewing purposes
+# this converts the data of the Cards in normal text for viewing purposes
 def convert_text(cards: list, dealer_first: bool) -> str:
     results = ""
     for card in cards:
         results += card[0] + " of " + card[1]
-        if dealer_first: # if it's the first-hand, show only one of the dealers' cards.
+        if dealer_first: # if it's the first-hand, show only one of the dealers' Cards.
             break
-        if len(cards) != cards.index(card)+1: # Gives the cards string a comma if it isn't the last card
+        if len(cards) != cards.index(card)+1: # Gives the Cards string a comma if it isn't the last card
             results += ", "
     return results
 
@@ -64,13 +64,13 @@ def show_cards(player_cards, dealer_cards, dealer_first: bool):
     print(f"money: {money}$ | bet: {bet}$")
     player_score = calculate_score(player_cards)
     dealer_score = calculate_score(dealer_cards)
-    print("Player cards:", convert_text(player_cards, False))
+    print("Player Cards:", convert_text(player_cards, False))
     print("Player score:", player_score)
     if dealer_first:
-        print("\nDealer cards:", convert_text(dealer_cards, True) + ", unknown")
+        print("\nDealer Cards:", convert_text(dealer_cards, True) + ", unknown")
         print("Dealer score:", card_value(dealer_cards[0]), "+ ?")
     else:
-        print("\nDealer cards:", convert_text(dealer_cards, False))
+        print("\nDealer Cards:", convert_text(dealer_cards, False))
         print("Dealer score:", dealer_score)
 
 while True:
@@ -108,14 +108,14 @@ while True:
             break
         # end betting loop
 
-    # initialize cards
+    # initialize Cards
     deck = deck_blueprint.copy()
     random.shuffle(deck)
     P_cards = []
     D_cards = []
     for _ in range(2):
-        P_cards.append(deck.pop()) # player cards
-        D_cards.append(deck.pop()) # dealer cards
+        P_cards.append(deck.pop()) # player Cards
+        D_cards.append(deck.pop()) # dealer Cards
     P_score = calculate_score(P_cards)
     D_score = calculate_score(D_cards)
 

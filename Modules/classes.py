@@ -1,4 +1,4 @@
-from modules.score_calc import calculate_score, card_value
+from Modules.score_calc import calculate_score, card_value
 from enum import Enum, auto
 # stats
 class Stats:
@@ -103,15 +103,15 @@ class Settings:
 
 # types of wins enum
 class ResultType(Enum):
-    NONE = auto()
-    DEALER_HIGHER = auto()
-    PLAYER_HIGHER = auto()
-    DEALER_BUST = auto()
-    PLAYER_BUST = auto()
-    PUSH = auto()
-    PUSH_BLACKJACK = auto()
-    DEALER_BLACKJACK = auto()
-    PLAYER_BLACKJACK = auto()
+    NONE = "NONE"
+    DEALER_HIGHER = "DEALER_HIGHER"
+    PLAYER_HIGHER = "PLAYER_HIGHER"
+    DEALER_BUST = "DEALER_BUST"
+    PLAYER_BUST = "PLAYER_BUST"
+    PUSH = "PUSH"
+    PUSH_BLACKJACK = "PUSH_BLACKJACK"
+    DEALER_BLACKJACK = "DEALER_BLACKJACK"
+    PLAYER_BLACKJACK = "PLAYER_BLACKJACK"
 
 # end-of-game result class for easy saving and checking
 class Result:
@@ -119,6 +119,7 @@ class Result:
         self.player_cards = player.cards
         self.dealer_cards = dealer.cards
         self.bet = player.bet
+        self.is_double_down = player.original_bet != player.bet
         self.player_score = player.get_score()
         self.dealer_score = dealer.get_score()
         self.__win_type = win_type
@@ -147,9 +148,12 @@ class Result:
     def to_dict(self):
         """Helper to turn this object into a dictionary automatically."""
         return {
+            "player_cards": self.player_cards,
+            "dealer_cards": self.dealer_cards,
             "player_score": self.player_score,
             "dealer_score": self.dealer_score,
             "bet": self.bet,
-            "win_type": str(self.get_win_type()),
+            "double_down": self.is_double_down,
+            "win_type": self.get_win_type().name,
             "message": self.get_result_string()
         }

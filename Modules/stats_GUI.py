@@ -1,4 +1,4 @@
-from modules.classes import Stats
+from Modules.classes import Stats
 import tkinter as tk
 
 def stats_gui(stats: Stats):

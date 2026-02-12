@@ -1,4 +1,4 @@
-from modules.classes import Player, Dealer, Result, ResultType
+from Modules.classes import Player, Dealer, Result, ResultType
 
 def check_scores(player: Player, dealer: Dealer) -> Result:
     if player.get_score() > 21:
