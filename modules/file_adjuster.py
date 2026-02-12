@@ -1,4 +1,4 @@
-from modules.classes import Player, Settings
+from modules.classes import Player, Settings, Dealer
 import json
 
 def get_info():
@@ -34,7 +34,7 @@ def get_settings():
     try:
         with open("settings.json", "r") as file:
             return json.load(file)
-    except:
+    except FileNotFoundError:
         with open("settings.json", "w") as file:
             data = {
                 "cooldown": 750,
@@ -42,3 +42,9 @@ def get_settings():
             }
             json.dump(data, file, indent=2)
             return data
+
+# def add_history(player: Player, dealer: Dealer, settings: Settings):
+#     try:
+#         with open("history.json", "rw") as file:
+#             pass
+#

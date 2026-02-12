@@ -5,6 +5,7 @@ from modules.image_adjuster import get_image
 from modules.file_adjuster import get_info, set_info, get_settings
 from modules.settings_GUI import settings_gui
 from modules.stats_GUI import stats_gui
+from modules.result_checking import check_scores
 
 # variables
 screen_size = {"width" : 500, "height" : 800}
@@ -128,7 +129,7 @@ def hit():
         stand()
     if player.get_score() > 21:
         sync_cards(False)
-        check_scores()
+        final_check_scores()
 
 def double():
     clear_buttons()
@@ -140,43 +141,41 @@ def double():
     sync_cards(True)
     root.after(settings.cooldown, stand)
 
-def check_scores():
-    if player.get_score() > 21:
-        print("score over 21")
-        result_label.config(text="You are bust! You lose!")
-        player.stats.player_bust += 1
-        player.stats.total_lost += player.bet
-        player.stats.adjust_winstreak(True)
-    elif dealer.get_score() > 21:
-        print("dealer score over 21")
-        result_label.config(text=f"Dealers bust! You win ${player.bet*2}!")
-        player.adjust_money(player.bet*2)
-        player.stats.dealer_bust += 1
-        player.stats.total_won += player.bet
-        player.stats.adjust_winstreak()
-    elif player.get_score() == dealer.get_score():
-        print("push")
-        result_label.config(text="Push! You get your money back!")
-        player.adjust_money(player.bet)
-        player.stats.ties += 1
-    elif player.get_score() > dealer.get_score():
-        print("score is higher")
-        result_label.config(text=f"Your score is higher! You win ${player.bet*2}!")
-        player.adjust_money(player.bet*2)
-        player.stats.higher_score += 1
-        player.stats.total_won += player.bet
-        player.stats.adjust_winstreak()
-    elif player.get_score() < dealer.get_score():
-        print("score is lower")
-        result_label.config(text="Your score is lower! You lose!")
-        player.stats.lower_score += 1
-        player.stats.total_lost += player.bet
-        player.stats.adjust_winstreak(True)
+def final_check_scores():
+    result = check_scores(player, dealer)
+    result_label.config(text=result.get_result_string())
+    match result.get_win_type():
+        case ResultType.PLAYER_BUST:
+            print("player bust")
+            player.stats.player_bust += 1
+            player.stats.total_lost += player.bet
+            player.stats.adjust_winstreak(True)
+        case ResultType.DEALER_BUST:
+            print("dealer bust")
+            player.adjust_money(player.bet * 2)
+            player.stats.dealer_bust += 1
+            player.stats.total_won += player.bet
+            player.stats.adjust_winstreak()
+        case ResultType.PUSH:
+            print("push")
+            player.adjust_money(player.bet)
+            player.stats.ties += 1
+        case ResultType.PLAYER_HIGHER:
+            print("player has higher score than dealer")
+            player.adjust_money(player.bet * 2)
+            player.stats.higher_score += 1
+            player.stats.total_won += player.bet
+            player.stats.adjust_winstreak()
+        case ResultType.DEALER_HIGHER:
+            print("dealer has higher scrore than player")
+            player.stats.lower_score += 1
+            player.stats.total_lost += player.bet
+            player.stats.adjust_winstreak(True)
     game_over()
 
 def dealer_hitting():
     if dealer.get_score() >= settings.dealer_stop:
-        check_scores()
+        final_check_scores()
         return
     dealer.cards.append(deck.pop())
     sync_cards()

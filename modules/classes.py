@@ -1,5 +1,5 @@
 from modules.score_calc import calculate_score, card_value
-
+from enum import Enum, auto
 # stats
 class Stats:
     def __init__(self, total_won: float = 0.0, total_lost: float = 0.0, ties: int = 0, won_by_blackjack: int = 0, lost_by_blackjack: int = 0,
@@ -34,10 +34,14 @@ class Stats:
         return vars(self)
 
     def adjust_winstreak(self, lose: bool = False):
-        if not lose:
+        if not lose and self.winstreak < 0:
+            self.winstreak = 1
+        elif not lose and self.winstreak > 0:
             self.winstreak += 1
-        else:
+        elif lose and self.winstreak > 0:
             self.winstreak = 0
+        elif lose and self.winstreak < 0:
+            self.winstreak += -1
 
 # player and dealer classes
 class Player:
@@ -96,3 +100,45 @@ class Settings:
     def to_dict(self):
         """Helper to turn this object into a dictionary automatically."""
         return vars(self)
+
+# types of wins enum
+class ResultType(Enum):
+    NONE = auto()
+    DEALER_HIGHER = auto()
+    PLAYER_HIGHER = auto()
+    DEALER_BUST = auto()
+    PLAYER_BUST = auto()
+    PUSH = auto()
+    PUSH_BLACKJACK = auto()
+    DEALER_BLACKJACK = auto()
+    PLAYER_BLACKJACK = auto()
+
+# end-of-game result class for easy saving and checking
+class Result:
+    def __init__(self, player: Player, dealer: Dealer, win_type: ResultType = ResultType.NONE):
+        self.player_cards = player.cards
+        self.dealer_cards = dealer.cards
+        self.bet = player.bet
+        self.player_score = player.get_score()
+        self.dealer_score = dealer.get_score()
+        self.__win_type = win_type
+        self.__result_string = self.set_result_string()
+
+    def set_win_type(self, win_type: ResultType):
+        self.__win_type = win_type
+    def get_win_type(self) -> ResultType:
+        return self.__win_type
+    def get_result_string(self) -> str:
+        return self.__result_string
+
+    def set_result_string(self) -> str:
+        match self.__win_type:
+            case ResultType.PLAYER_BUST: return f"You are bust! You lose ${self.bet}!"
+            case ResultType.DEALER_BUST: return f"Dealers bust! You win ${self.bet*2}!"
+            case ResultType.PUSH: return f"Push! You get ${self.bet} back!"
+            case ResultType.PLAYER_HIGHER: return f"Your score is higher! You win ${self.bet*2}!"
+            case ResultType.DEALER_HIGHER: return f"Your score is lower! You lose ${self.bet}!"
+            case ResultType.PUSH_BLACKJACK: return f"Both have Blackjack! Push! You get ${self.bet} back"
+            case ResultType.PLAYER_BLACKJACK: return f"Blackjack! You win ${int(self.bet + (self.bet * 1.5))}!"
+            case ResultType.DEALER_BLACKJACK: return f"Dealer has Blackjack! You lose ${self.bet}!"
+        return ""
