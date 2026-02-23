@@ -1,7 +1,7 @@
 import tkinter as tk
 import random
 from Modules.classes import *
-from Modules.image_adjuster import get_image
+from Modules.image_adjuster import add_card
 from Modules.file_adjuster import get_info, set_info, get_settings, add_history
 from Modules.settings_GUI import settings_gui
 from Modules.stats_GUI import stats_gui
@@ -14,23 +14,6 @@ cards_list = ['Ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Quee
 deck_blueprint = [(card, category) for category in card_categories for card in cards_list]
 
 # def's
-# cannot remove it from main
-def add_card(card, frame):
-    if not card == "joker":
-        image = get_image(card[0], card[1])
-    else:
-        # joker is a placeholder name for an empty card
-        image = get_image("joker", "joker")
-    card_label = tk.Label(frame, image=image)
-    card_label.image = image
-    card_amount = len(frame.winfo_children())
-    if card_amount > 4:
-        if not screen_size['width'] > card_amount * 125:
-            screen_size['width'] = card_amount * 125
-        root.geometry(f"{screen_size['width']}x{screen_size['height']}")
-        root.update()
-    card_label.pack(side="left", padx=10)
-
 def clear_cards(frame):
     for widget in frame.winfo_children():
         widget.destroy()
@@ -85,7 +68,7 @@ def reset():
     bet_input.selection_range(0, tk.END)
     settings_button = tk.Button(bottom_frame, text="settings", command=edit_settings)
     settings_button.place(relx=1.0, rely=1.0, anchor="se", x=-10, y=-5)
-    stats_button = tk.Button(bottom_frame, text="stats", command=lambda: stats_gui(player.stats))
+    stats_button = tk.Button(bottom_frame, text="stats", command=lambda: stats_gui())
     stats_button.place(relx=1.0, rely=1.0, anchor="sw", x=-490, y=-5)
 
 def game_over(result: Result):
@@ -104,13 +87,13 @@ def sync_cards(dealers_first: bool = False):
     clear_cards(player.frame)
     clear_cards(dealer.frame)
     if dealers_first:
-        add_card(dealer.cards[0], dealer.frame)
-        add_card("joker", dealer.frame)
+        add_card(dealer.cards[0], dealer.frame, root, screen_size)
+        add_card("joker", dealer.frame, root, screen_size)
     else:
         for card in dealer.cards:
-            add_card(card, dealer.frame)
+            add_card(card, dealer.frame, root, screen_size)
     for card in player.cards:
-        add_card(card, player.frame)
+        add_card(card, player.frame, root, screen_size)
     dealer_score_label.config(text=f"Dealer Score: {dealer.get_score(dealers_first)}")
     player_score_label.config(text=f"Player Score: {player.get_score()}")
     money_label.config(text=f"Cash: ${player.get_money()}")
@@ -354,4 +337,17 @@ profit_label.pack(side="bottom")
 money_label.pack(side="bottom")
 reset() # deleted duplicate code
 
+# preload all images
+dealer.cards = deck_blueprint.copy()
+player.cards = deck_blueprint.copy()
+amount = int(len(dealer.cards) / 2)
+dealer.cards = dealer.cards[0:amount]
+player.cards = player.cards[amount:amount*2]
+sync_cards()
+dealer.cards = []
+player.cards = []
+screen_size = {"width" : 500, "height" : 800}
+root.geometry(f"{screen_size['width']}x{screen_size['height']}")
+root.update()
+sync_cards()
 root.mainloop()
