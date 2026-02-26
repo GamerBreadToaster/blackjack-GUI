@@ -139,4 +139,3 @@ def stats_gui():
         __add_frame(container, games)
 
     canvas.bind_all("<MouseWheel>", _on_mousewheel)
-    window.mainloop()

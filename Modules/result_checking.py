@@ -1,9 +1,9 @@
-from Modules.classes import Player, Dealer, Result, ResultType
+from Modules.classes import Player, Dealer, Result, ResultType, Settings
 
-def check_scores(player: Player, dealer: Dealer) -> Result:
-    if player.get_score() > 21:
+def check_scores(player: Player, dealer: Dealer, settings: Settings) -> Result:
+    if player.get_score() > settings.max_score:
         result_type = ResultType.PLAYER_BUST
-    elif dealer.get_score() > 21:
+    elif dealer.get_score() > settings.max_score:
         result_type = ResultType.DEALER_BUST
     elif player.get_score() == dealer.get_score():
         result_type = ResultType.PUSH

@@ -1,7 +1,7 @@
 import tkinter as tk
 import random
 from Modules.classes import *
-from Modules.image_adjuster import add_card
+from Modules.image_adjuster import add_card, get_image
 from Modules.file_adjuster import get_info, set_info, get_settings, add_history
 from Modules.settings_GUI import settings_gui
 from Modules.stats_GUI import stats_gui
@@ -71,6 +71,11 @@ def reset():
     stats_button = tk.Button(bottom_frame, text="stats", command=lambda: stats_gui())
     stats_button.place(relx=1.0, rely=1.0, anchor="sw", x=-490, y=-5)
 
+    # reset screen
+    screen_size = {"width": 500, "height": 800}
+    root.geometry(f"{screen_size['width']}x{screen_size['height']}")
+    root.update()
+
 def game_over(result: Result):
     # resetting screen to prevent any more button hitting
     global result_button
@@ -104,14 +109,14 @@ def hit():
     try:double_button.destroy()
     except Exception: pass
     root.unbind("d")
-    if player.get_score() <= 21:
+    if player.get_score() <= settings.max_score:
         player.cards.append(deck.pop())
         sync_cards(True)
     # check for 21 and higher after grabbing Cards
-    if player.get_score() == 21:
+    if player.get_score() == settings.max_score:
         player.stats.hit_21 += 1
         stand()
-    if player.get_score() > 21:
+    if player.get_score() > settings.max_score:
         sync_cards(False)
         final_check_scores()
 
@@ -126,7 +131,7 @@ def double():
     root.after(settings.cooldown, stand)
 
 def final_check_scores():
-    result = check_scores(player, dealer)
+    result = check_scores(player, dealer, settings)
     result_label.config(text=result.get_result_string())
     match result.get_win_type():
         case ResultType.PLAYER_BUST:
@@ -257,7 +262,8 @@ def start_game():
         player.cards.append(deck.pop())
         dealer.cards.append(deck.pop())
     sync_cards(True)
-    first_check_blackjacks()
+    if settings.enable_blackjack:
+        first_check_blackjacks()
 
 def get_bet(event = None):
     try:
@@ -338,16 +344,6 @@ money_label.pack(side="bottom")
 reset() # deleted duplicate code
 
 # preload all images
-dealer.cards = deck_blueprint.copy()
-player.cards = deck_blueprint.copy()
-amount = int(len(dealer.cards) / 2)
-dealer.cards = dealer.cards[0:amount]
-player.cards = player.cards[amount:amount*2]
-sync_cards()
-dealer.cards = []
-player.cards = []
-screen_size = {"width" : 500, "height" : 800}
-root.geometry(f"{screen_size['width']}x{screen_size['height']}")
-root.update()
-sync_cards()
+for card, suit in deck_blueprint:
+    image = get_image(card, suit)
 root.mainloop()
