@@ -314,7 +314,6 @@ def on_close():
         set_info(player)
     root.destroy()
 
-
 deck = []
 dealer = Dealer()
 data = get_info()
