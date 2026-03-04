@@ -91,10 +91,11 @@ class Dealer:
 
 # settings
 class Settings:
-    def __init__(self, cooldown: int = 750, deck_amount: int = 6, dealer_stop: int = 17, credit_card_debt: float = 1000,
+    def __init__(self, cooldown: int = 750, deck_amount: int = 6, shuffle_after = 5, dealer_stop: int = 17, credit_card_debt: float = 1000,
                  max_score: int = 21, enable_blackjack: bool = True, stand_at_max: bool = True, **kwargs):
         self.cooldown = cooldown
         self.deck_amount = deck_amount
+        self.shuffle_after = shuffle_after
         self.dealer_stop = dealer_stop
         self.credit_card_debt = credit_card_debt
         self.max_score = max_score

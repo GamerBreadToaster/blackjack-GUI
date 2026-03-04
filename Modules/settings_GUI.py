@@ -2,9 +2,10 @@ from Modules.classes import Settings
 from Modules.file_adjuster import set_settings
 import tkinter as tk
 def settings_gui(settings: Settings) -> Settings:
-    def __reset_settings():
+    def reset_settings():
         settings.cooldown = 750
         settings.deck_amount = 6
+        settings.shuffle_after = 5
         settings.dealer_stop = 17
         settings.credit_card_debt = 1000
         settings.max_score = 21
@@ -32,21 +33,25 @@ def settings_gui(settings: Settings) -> Settings:
             settings.deck_amount = int(deck_amount_entry.get())
             if settings.deck_amount < 1:
                 raise Exception("Deck amount should be at least one (1)!")
+            settings.shuffle_after = int(shuffle_at_entry.get())
+            if settings.shuffle_after < 1:
+                raise Exception("Shuffle after should be at least one (1)!")
             settings.dealer_stop = int(dealer_stop_entry.get())
             if settings.dealer_stop < 1:
                 raise Exception("dealer stop should be at least one (1)!")
             settings.credit_card_debt = float(credit_card_entry.get())
             if settings.credit_card_debt < 1:
-                raise Exception("Credit card usage should at least be one (1)")
+                raise Exception("Credit card usage should at least be one (1)!")
             settings.max_score = int(max_score_entry.get())
             if settings.max_score < 1:
-                raise Exception("Max score should be at least one (1)")
+                raise Exception("Max score should be at least one (1)!")
         except Exception as err:
             error_label.config(text=f"{err}")
             return
         set_settings(settings)
         window.destroy()
     window = tk.Toplevel()
+    window.grab_set()
 
     cooldown_entry = __add_labeled_field(
         window,
@@ -55,8 +60,13 @@ def settings_gui(settings: Settings) -> Settings:
     )
     deck_amount_entry = __add_labeled_field(
         window,
-        "Total amount of decks used: \n(Gets shuffled after every round)",
+        f"Total amount of decks used: \n(Gets shuffled after every {settings.shuffle_after} round(s))",
         settings.deck_amount
+    )
+    shuffle_at_entry = __add_labeled_field(
+        window,
+        "Shuffle after this many rounds: ",
+        settings.shuffle_after
     )
     dealer_stop_entry = __add_labeled_field(
         window,
@@ -83,9 +93,11 @@ def settings_gui(settings: Settings) -> Settings:
     error_label = tk.Label(window)
     error_label.pack()
 
-    reset_settings = tk.Button(window, text="reset settings to default", command=__reset_settings)
+    reset_settings = tk.Button(window, text="reset settings to default", command=reset_settings)
     reset_settings.pack(side="bottom")
     save_button = tk.Button(window, text="save settings", command=on_save)
     save_button.pack(side="bottom")
+
+    window.wait_window()
 
     return settings

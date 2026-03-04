@@ -92,6 +92,7 @@ def game_over(result: Result):
     result_button.pack()
     set_info(player)
     add_history(result)
+    game.rounds_played += 1
 
 def sync_cards(dealers_first: bool = False):
     # this handles the logic of showing all cards on screen, and resizing the screen if necessary
@@ -130,7 +131,7 @@ def hit():
     except Exception: pass
     root.unbind("d")
     if player.get_score() <= settings.max_score:
-        player.cards.append(deck.pop())
+        player.cards.append(game.deck.pop())
         sync_cards(True)
     # check for 21 and higher after grabbing Card
     if player.get_score() == settings.max_score:
@@ -146,7 +147,7 @@ def double():
     clear_buttons()
     player.adjust_money(-player.bet)
     player.bet = player.bet*2
-    player.cards.append(deck.pop())
+    player.cards.append(game.deck.pop())
     player.double = True
     player.stats.double_downs += 1
     sync_cards(True)
@@ -188,7 +189,7 @@ def dealer_hitting():
     if dealer.get_score() >= settings.dealer_stop:
         final_check_scores()
         return
-    dealer.cards.append(deck.pop())
+    dealer.cards.append(game.deck.pop())
     sync_cards()
     root.after(settings.cooldown, dealer_hitting)
 
@@ -249,7 +250,7 @@ def give_money(button: tk.Button):
     money_label.config(text=f"Cash: ${settings.credit_card_debt}")
 
 def start_game():
-    global deck, hit_button, stand_button, double_button
+    global game, hit_button, stand_button, double_button
     # clear Cards and reset screen size
     clear_cards(player.frame)
     clear_cards(dealer.frame)
@@ -276,13 +277,13 @@ def start_game():
     root.update()
 
     # reset deck and Cards and deal Cards
-    deck = deck_blueprint.copy() * settings.deck_amount # variable numbers of decks
-    random.shuffle(deck)
+    game.deck = deck_blueprint.copy() * settings.deck_amount # variable numbers of decks
+    random.shuffle(game.deck)
     dealer.cards = []
     player.cards = []
     for _ in range(2):
-        player.cards.append(deck.pop())
-        dealer.cards.append(deck.pop())
+        player.cards.append(game.deck.pop())
+        dealer.cards.append(game.deck.pop())
     sync_cards(True)
     if settings.enable_blackjack:
         first_check_blackjacks()
@@ -314,7 +315,11 @@ def on_close():
         set_info(player)
     root.destroy()
 
-deck = []
+# global Game class for eventual full refactoring to class-based structure
+class Game:
+    deck = []
+    rounds_played = 0
+game = Game
 dealer = Dealer()
 data = get_info()
 data_settings = get_settings()
