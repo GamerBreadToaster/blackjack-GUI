@@ -132,7 +132,6 @@ def stats_gui():
         if max_cards > max_cards_ever:
             max_cards_ever = max_cards
 
-
     if max_cards_ever > 4:
         required_width = max_cards_ever * 125
         # only resizes when necessary

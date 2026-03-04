@@ -2,6 +2,16 @@ from Modules.classes import Settings
 from Modules.file_adjuster import set_settings
 import tkinter as tk
 def settings_gui(settings: Settings) -> Settings:
+    def __reset_settings():
+        settings.cooldown = 750
+        settings.deck_amount = 6
+        settings.dealer_stop = 17
+        settings.credit_card_debt = 1000
+        settings.max_score = 21
+        settings.enable_blackjack = True
+        settings.stand_at_max = True
+        set_settings(settings)
+        window.destroy()
     def __add_labeled_field(parent: tk.Misc, label_text: str, initial_value) -> tk.Entry:
         frame = tk.Frame(parent)
         label = tk.Label(frame, text=label_text)
@@ -17,6 +27,7 @@ def settings_gui(settings: Settings) -> Settings:
     def on_save():
         try:
             settings.enable_blackjack = enable_blackjack_var.get()
+            settings.stand_at_max = stand_at_max_var.get()
             settings.cooldown = int(cooldown_entry.get())
             settings.deck_amount = int(deck_amount_entry.get())
             if settings.deck_amount < 1:
@@ -72,6 +83,8 @@ def settings_gui(settings: Settings) -> Settings:
     error_label = tk.Label(window)
     error_label.pack()
 
+    reset_settings = tk.Button(window, text="reset settings to default", command=__reset_settings)
+    reset_settings.pack(side="bottom")
     save_button = tk.Button(window, text="save settings", command=on_save)
     save_button.pack(side="bottom")
 
