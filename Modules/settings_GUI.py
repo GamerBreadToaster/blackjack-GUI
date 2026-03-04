@@ -62,6 +62,9 @@ def settings_gui(settings: Settings) -> Settings:
         "Maximum score you can win: \n(At what score anyone will bust)",
         settings.max_score
     )
+    stand_at_max_var = tk.BooleanVar(value=settings.stand_at_max)
+    stand_at_max_button = tk.Checkbutton(window, text="automatically stand at max score", variable=stand_at_max_var)
+    stand_at_max_button.pack()
     enable_blackjack_var = tk.BooleanVar(value=settings.enable_blackjack)
     enable_blackjack_button = tk.Checkbutton(window, text="Enable blackjack", variable=enable_blackjack_var)
     enable_blackjack_button.pack()

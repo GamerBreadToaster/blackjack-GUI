@@ -32,7 +32,7 @@ def get_image(card, suite) -> ImageTk.PhotoImage | None:
     except Exception as e:
         print(f"An error occurred: {e}")
 
-def add_card(card, frame, root, screen_size):
+def add_card(card, frame):
     if not card == "joker":
         image = get_image(card[0], card[1])
     else:
@@ -40,10 +40,4 @@ def add_card(card, frame, root, screen_size):
         image = get_image("joker", "joker")
     card_label = tk.Label(frame, image=image)
     card_label.image = image
-    card_amount = len(frame.winfo_children())
-    if card_amount > 4:
-        if not screen_size['width'] > card_amount * 125:
-            screen_size['width'] = card_amount * 125
-        root.geometry(f"{screen_size['width']}x{screen_size['height']}")
-        root.update()
     card_label.pack(side="left", padx=10)

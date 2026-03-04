@@ -90,6 +90,8 @@ games = {
       "message": "Your score is lower! You lose $100.0!"
     }
 
+#TODO: still broken, have to fix
+
 def stats_gui():
     def _on_mousewheel(event):
         canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
@@ -102,14 +104,14 @@ def stats_gui():
         dealer_score_label = tk.Label(game_container, name="dealer_score", text=f"Dealer Score: {game_data["dealer_score"]}", bg="green")
         dealer_score_label.pack()
         for card in game_data["dealer_cards"]:
-            add_card(card, dealer_frame, game_container, screen_size)
+            add_card(card, dealer_frame)
 
         player_frame = tk.Frame(game_container, bg="red", pady=20)
         player_frame.pack(side="top", fill="x")
         player_score_label = tk.Label(game_container, name="player_score", text=f"Player Score: {game_data["player_score"]}", bg="red")
         player_score_label.pack()
         for card in game_data["player_cards"]:
-            add_card(card, player_frame, game_container, screen_size)
+            add_card(card, player_frame)
 
     history = get_history()
     screen_size = {"width": 500, "height": 800}
@@ -123,6 +125,22 @@ def stats_gui():
     canvas = tk.Canvas(container)
     scrollbar = tk.Scrollbar(container, orient="vertical", command=canvas.yview)
 
+    # resize window before hand
+    max_cards_ever = 0
+    for game in history["games"]:
+        max_cards = max(len(game["player_cards"]), len(game["dealer_cards"]))
+        if max_cards > max_cards_ever:
+            max_cards_ever = max_cards
+
+
+    if max_cards_ever > 4:
+        required_width = max_cards_ever * 125
+        # only resizes when necessary
+        if screen_size["width"] < required_width:
+            screen_size["width"] = required_width
+            window.geometry(f"{screen_size["width"]}x{screen_size["height"]}")
+            window.update()
+
     # thanks AI
     # This magic line updates the scroll region whenever the frame grows
     scrollable_frame = tk.Frame(canvas)
@@ -135,7 +153,7 @@ def stats_gui():
     canvas.pack(side="bottom", fill="both", expand=True)
     scrollbar.pack(side="right", fill="y")
 
-    for games in history["games"]:
-        __add_frame(container, games)
+    for game in history["games"]:
+        __add_frame(scrollable_frame, game)
 
     canvas.bind_all("<MouseWheel>", _on_mousewheel)

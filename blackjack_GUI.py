@@ -19,6 +19,8 @@ def clear_cards(frame):
         widget.destroy()
 
 def clear_buttons():
+    # does as it's said, clears the buttons off-screen and unbinds all hotkeys
+    #TODO: change the destroying of buttons to just disabling them to prevent the try except catch fucking up unseen bugs
     try:
         hit_button.destroy()
         stand_button.destroy()
@@ -66,6 +68,9 @@ def reset():
     bet_input.insert(0, f"{player.original_bet}")
     bet_input.focus_set()
     bet_input.selection_range(0, tk.END)
+
+    # buttons in corners
+    #TODO: fix the stats button not anchored to bottom left corner
     settings_button = tk.Button(bottom_frame, text="settings", command=edit_settings)
     settings_button.place(relx=1.0, rely=1.0, anchor="se", x=-10, y=-5)
     stats_button = tk.Button(bottom_frame, text="stats", command=lambda: stats_gui())
@@ -89,21 +94,36 @@ def game_over(result: Result):
     add_history(result)
 
 def sync_cards(dealers_first: bool = False):
+    # this handles the logic of showing all cards on screen, and resizing the screen if necessary
+
     clear_cards(player.frame)
     clear_cards(dealer.frame)
+    # if the player hasn't stood yet, the dealer won't reveal his second card
     if dealers_first:
-        add_card(dealer.cards[0], dealer.frame, root, screen_size)
-        add_card("joker", dealer.frame, root, screen_size)
+        add_card(dealer.cards[0], dealer.frame)
+        add_card("joker", dealer.frame)
     else:
         for card in dealer.cards:
-            add_card(card, dealer.frame, root, screen_size)
+            add_card(card, dealer.frame)
     for card in player.cards:
-        add_card(card, player.frame, root, screen_size)
+        add_card(card, player.frame)
+
+    # changes the labels to reflect  current game state
     dealer_score_label.config(text=f"Dealer Score: {dealer.get_score(dealers_first)}")
     player_score_label.config(text=f"Player Score: {player.get_score()}")
     money_label.config(text=f"Cash: ${player.get_money()}")
     profit_label.config(text=f"Profit: ${player.get_profit()}")
     session_profit_label.config(text=f"Session profit: ${player.get_profit(True)}")
+
+    # resize screen
+    max_cards = max(len(player.frame.winfo_children()), len(dealer.frame.winfo_children()))
+    if max_cards > 4:
+        required_width = max_cards * 125
+        # only resizes when necessary
+        if screen_size["width"] < required_width:
+            screen_size["width"] = required_width
+            root.geometry(f"{screen_size["width"]}x{screen_size["height"]}")
+            root.update()
 
 def hit():
     try:double_button.destroy()
@@ -112,15 +132,17 @@ def hit():
     if player.get_score() <= settings.max_score:
         player.cards.append(deck.pop())
         sync_cards(True)
-    # check for 21 and higher after grabbing Cards
+    # check for 21 and higher after grabbing Card
     if player.get_score() == settings.max_score:
         player.stats.hit_21 += 1
-        stand()
+        if settings.stand_at_max:
+            stand()
     if player.get_score() > settings.max_score:
         sync_cards(False)
         final_check_scores()
 
 def double():
+    # doubling down stops your turn immediately
     clear_buttons()
     player.adjust_money(-player.bet)
     player.bet = player.bet*2
