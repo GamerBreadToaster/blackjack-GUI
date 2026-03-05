@@ -6,6 +6,7 @@ from Modules.file_adjuster import get_info, set_info, get_settings, add_history
 from Modules.settings_GUI import settings_gui
 from Modules.stats_GUI import stats_gui
 from Modules.result_checking import check_scores, check_blackjack
+from Modules.debug import *
 
 # variables
 screen_size = {"width" : 500, "height" : 800}
@@ -131,7 +132,7 @@ def hit():
     except Exception: pass
     root.unbind("d")
     if player.get_score() <= settings.max_score:
-        player.cards.append(game.deck.pop())
+        player.cards.append(game.get_card())
         sync_cards(True)
     # check for 21 and higher after grabbing Card
     if player.get_score() == settings.max_score:
@@ -147,7 +148,7 @@ def double():
     clear_buttons()
     player.adjust_money(-player.bet)
     player.bet = player.bet*2
-    player.cards.append(game.deck.pop())
+    player.cards.append(game.get_card())
     player.double = True
     player.stats.double_downs += 1
     sync_cards(True)
@@ -158,28 +159,28 @@ def final_check_scores():
     result_label.config(text=result.get_result_string())
     match result.get_win_type():
         case ResultType.PLAYER_BUST:
-            print("player bust")
+            log("player bust")
             player.stats.player_bust += 1
             player.stats.total_lost += player.bet
             player.stats.adjust_winstreak(True)
         case ResultType.DEALER_BUST:
-            print("dealer bust")
+            log("dealer bust")
             player.adjust_money(player.bet * 2)
             player.stats.dealer_bust += 1
             player.stats.total_won += player.bet
             player.stats.adjust_winstreak()
         case ResultType.PUSH:
-            print("push")
+            log("push")
             player.adjust_money(player.bet)
             player.stats.ties += 1
         case ResultType.PLAYER_HIGHER:
-            print("player has higher score than dealer")
+            log("player has higher score than dealer")
             player.adjust_money(player.bet * 2)
             player.stats.higher_score += 1
             player.stats.total_won += player.bet
             player.stats.adjust_winstreak()
         case ResultType.DEALER_HIGHER:
-            print("dealer has higher scrore than player")
+            log("dealer has higher scrore than player")
             player.stats.lower_score += 1
             player.stats.total_lost += player.bet
             player.stats.adjust_winstreak(True)
@@ -189,7 +190,7 @@ def dealer_hitting():
     if dealer.get_score() >= settings.dealer_stop:
         final_check_scores()
         return
-    dealer.cards.append(game.deck.pop())
+    dealer.cards.append(game.get_card())
     sync_cards()
     root.after(settings.cooldown, dealer_hitting)
 
@@ -224,7 +225,7 @@ def finish_blackjack_round():
     result_label.config(text=result.get_result_string())
     match result.get_win_type():
         case ResultType.PUSH_BLACKJACK:
-            print("blackjack push")
+            log("blackjack push")
             player.stats.blackjack_push += 1
             player.adjust_money(player.bet)
         case ResultType.PLAYER_BLACKJACK:
@@ -233,12 +234,12 @@ def finish_blackjack_round():
             player.stats.adjust_winstreak()
             player.stats.total_won += win_amount - player.bet
             player.adjust_money(win_amount)
-            print("player blackjack")
+            log("player blackjack")
         case ResultType.DEALER_BLACKJACK:
             player.stats.total_lost += player.bet
             player.stats.lost_by_blackjack += 1
             player.stats.adjust_winstreak(True)
-            print("dealer blackjack")
+            log("dealer blackjack")
 
     # C. Trigger Game Over
     game_over(result)
@@ -276,14 +277,18 @@ def start_game():
     root.geometry(f"{screen_size['width']}x{screen_size['height']}")
     root.update()
 
+    # game logic
+    game.rounds_played += 1
+    log("round:", game.rounds_played)
+
     # reset deck and Cards and deal Cards
-    game.deck = deck_blueprint.copy() * settings.deck_amount # variable numbers of decks
-    random.shuffle(game.deck)
+    if game.rounds_played % settings.shuffle_after == 0:
+        game.shuffle_deck()
     dealer.cards = []
     player.cards = []
     for _ in range(2):
-        player.cards.append(game.deck.pop())
-        dealer.cards.append(game.deck.pop())
+        player.cards.append(game.get_card())
+        dealer.cards.append(game.get_card())
     sync_cards(True)
     if settings.enable_blackjack:
         first_check_blackjacks()
@@ -317,15 +322,32 @@ def on_close():
 
 # global Game class for eventual full refactoring to class-based structure
 class Game:
-    deck = []
-    rounds_played = 0
-game = Game
+    def __init__(self):
+        self.deck = []
+        self.rounds_played = 0
+
+    def get_card(self):
+        try:
+            return self.deck.pop()
+        except IndexError:
+            log("emergency shuffle. Deck was empty")
+            self.shuffle_deck()
+            return self.deck.pop()
+
+    def shuffle_deck(self):
+        self.deck = deck_blueprint.copy() * settings.deck_amount  # variable numbers of decks
+        random.shuffle(self.deck)
+        log(f"shuffling deck after {self.rounds_played} rounds played, shuffle_after settings: {settings.shuffle_after}, deck amount: {settings.deck_amount}")
+
+game = Game()
 dealer = Dealer()
 data = get_info()
 data_settings = get_settings()
-stats_data = data.get("stats", {})
-player = Player(data["money"], data["profit"], Stats(**stats_data))
+stats_data = Stats(**data.get("stats", {}))
+player = Player(data["money"], data["profit"], stats_data)
 settings = Settings(**data_settings)
+
+player.stats.adjust_winstreak()
 
 # root
 root = tk.Tk()

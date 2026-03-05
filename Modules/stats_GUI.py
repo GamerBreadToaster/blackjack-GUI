@@ -1,8 +1,9 @@
 import tkinter as tk
+from Modules.debug import log
 from Modules.image_adjuster import add_card
 from Modules.file_adjuster import get_history
 
-# thanks, AI, for doing this for me sigh.
+# almost Fully AI generated because I didn't know what the fuck I was doing
 
 def stats_gui():
     def _on_mousewheel(event):
@@ -61,7 +62,7 @@ def stats_gui():
     if not history or "games" not in history or not history["games"]:
         window = tk.Toplevel()
         window.title("Game History")
-        window.geometry("400x200")
+        window.geometry("525x200")
         tk.Label(window, text="No games played yet!", font=("Arial", 14)).pack(expand=True)
         return
 
@@ -72,7 +73,7 @@ def stats_gui():
         if highest_in_game > max_cards_ever:
             max_cards_ever = highest_in_game
 
-    req_width = max(500, max_cards_ever * 125)
+    req_width = max(525, max_cards_ever * 125 + 25)
     screen_size = {"width": req_width, "height": 800}
 
     # --- Main Stats Window Setup ---
@@ -99,7 +100,12 @@ def stats_gui():
     canvas.pack(side="left", fill="both", expand=True)
 
     # Draw the games in reverse order so the newest games are at the top!
+    max_counter = len(history["games"]) - 10
     for game in reversed(history["games"]):
-        __add_frame(scrollable_frame, game)
+        counter = history["games"].index(game)
+        if not counter <= max_counter:
+            log(f"Making game: {counter}, max amount of games: {max_counter}")
+            __add_frame(scrollable_frame, game)
+
 
     canvas.bind_all("<MouseWheel>", _on_mousewheel)
