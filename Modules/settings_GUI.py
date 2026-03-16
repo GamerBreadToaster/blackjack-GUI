@@ -60,7 +60,7 @@ def settings_gui(settings: Settings) -> Settings:
     )
     deck_amount_entry = __add_labeled_field(
         window,
-        f"Total amount of decks used: \n(Gets shuffled after every {settings.shuffle_after} round(s))",
+        f"Total number of decks used: \n(Gets shuffled after every {settings.shuffle_after} round(s))",
         settings.deck_amount
     )
     shuffle_at_entry = __add_labeled_field(
