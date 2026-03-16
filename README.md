@@ -77,3 +77,8 @@ This dictates if you automatically stand at the maximum score. If the maximum sc
 default value: `True`
 
 This enables or disables blackjack for both parties. So if you have blackjack, you can still hit, stand or double down. But the blackjack payout is not given.
+
+## AI usage
+Some parts of the code are AI-generated, and those are mentioned in comments if they are.
+Commits text is also AI-generated because I couldn't care less for my own project. The reason some code is AI-generated is that some parts of the code are plainly too complicated for my simple brain to comprehend. I try myself at first, I always do.
+Most of the code is handwritten by me anyway.
