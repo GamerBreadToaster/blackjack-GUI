@@ -26,7 +26,8 @@ Your settings, money and all previous games are saved in json files, so you can 
 Did you lose all your money? Don't worry, just use your credit card! You will get more money to play with, but the profit will still be in the negatives.
 
 ## Customizable settings
-change exactly how you want to play:
+I've tailored these settings for the best experience when playing.\
+Change exactly how you want to play:
 
 #### general cooldown
 default value: `500`
@@ -82,3 +83,6 @@ This enables or disables blackjack for both parties. So if you have blackjack, y
 Some parts of the code are AI-generated, and those are mentioned in comments if they are.
 Commits text is also AI-generated because I couldn't care less for my own project. The reason some code is AI-generated is that some parts of the code are plainly too complicated for my simple brain to comprehend. I try myself at first, I always do.
 Most of the code is handwritten by me anyway.
+
+## Old folder
+In the old folder you can find the CLI version of this project. It's horrible, but did inspire me to make this.
