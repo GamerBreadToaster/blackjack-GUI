@@ -1,4 +1,6 @@
-from modules.classes import Player, Settings
+import os.path
+
+from Modules.classes import Player, Settings, Dealer, Result
 import json
 
 def get_info():
@@ -34,7 +36,7 @@ def get_settings():
     try:
         with open("settings.json", "r") as file:
             return json.load(file)
-    except:
+    except FileNotFoundError:
         with open("settings.json", "w") as file:
             data = {
                 "cooldown": 750,
@@ -42,3 +44,31 @@ def get_settings():
             }
             json.dump(data, file, indent=2)
             return data
+
+def add_history(result: Result):
+    # this saves a list of all played games
+    file_path = "history.json"
+
+    if os.path.exists(file_path):
+        with open(file_path, "r") as file:
+            try:
+                data = json.load(file)
+            except json.JSONDecodeError:
+                data = {"games": []}
+    else:
+        data = {"games": []}
+
+    data["games"].append(result.to_dict())
+    with open(file_path, "w") as file:
+        json.dump(data, file, indent=2)
+
+def get_history():
+    file_path = "history.json"
+    if os.path.exists(file_path):
+        with open(file_path, "r") as file:
+            try:
+                return json.load(file)
+            except json.JSONDecodeError:
+                return None
+    else:
+        return None
