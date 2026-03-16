@@ -25,7 +25,7 @@ Your settings, money and all previous games are saved in json files, so you can 
 ### Never run out of money!
 Did you lose all your money? Don't worry, just use your credit card! You will get more money to play with, but the profit will still be in the negatives.
 
-### customizable settings
+## customizable settings
 change exactly how you want to play:
 
 #### general cooldown
