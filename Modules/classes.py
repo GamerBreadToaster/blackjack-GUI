@@ -1,5 +1,7 @@
 from Modules.score_calc import calculate_score, card_value
-from enum import Enum, auto
+from enum import Enum
+import time
+
 # stats
 class Stats:
     def __init__(self, total_won: float = 0.0, total_lost: float = 0.0, ties: int = 0, won_by_blackjack: int = 0, lost_by_blackjack: int = 0,
@@ -129,6 +131,7 @@ class Result:
         self.dealer_score = dealer.get_score()
         self.__win_type = win_type
         self.__result_string = self.set_result_string()
+        self.time_played = time.time()
 
     def set_win_type(self, win_type: ResultType):
         self.__win_type = win_type
@@ -160,5 +163,6 @@ class Result:
             "bet": self.bet,
             "double_down": self.is_double_down,
             "win_type": self.get_win_type().name,
-            "message": self.get_result_string()
+            "message": self.get_result_string(),
+            "time": self.time_played
         }

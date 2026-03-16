@@ -1,7 +1,8 @@
 import tkinter as tk
-from Modules.debug import log
+from Modules.debug import log, DEBUG_MODE
 from Modules.image_adjuster import add_card
 from Modules.file_adjuster import get_history
+from datetime import datetime
 
 # almost Fully AI generated because I didn't know what the fuck I was doing
 
@@ -14,6 +15,12 @@ def stats_gui():
         # Adding a ridge border to clearly separate each game
         game_container = tk.Frame(parent, bd=4, relief="ridge", pady=10)
         game_container.pack(fill="x", pady=10, padx=10)
+
+        # time played for each game
+        dt_object = datetime.fromtimestamp(game_data["time"])
+        formatted_time = dt_object.strftime("%H:%M:%S | %d/%m/%Y")
+        time_played_label = tk.Label(game_container, text=f"played at: {formatted_time}")
+        time_played_label.pack()
 
         # --- Dealer Frame (Green) ---
         dealer_frame = tk.Frame(game_container, bg="green", pady=10)
@@ -100,12 +107,26 @@ def stats_gui():
     canvas.pack(side="left", fill="both", expand=True)
 
     # Draw the games in reverse order so the newest games are at the top!
-    max_counter = len(history["games"]) - 10
-    for game in reversed(history["games"]):
-        counter = history["games"].index(game)
-        if not counter <= max_counter:
-            log(f"Making game: {counter}, max amount of games: {max_counter}")
+    # I have no idea what I'm doing here, which is obvious
+    global counter, max_counter
+    max_counter = len(history["games"])
+    counter = max_counter - 10
+    def add_games():
+        global counter, max_counter
+        if counter < 1:
+            # more_button.config(state="disabled")
+            counter = 0
+        for i in reversed(range(counter, max_counter)):
+            game = history["games"][i]
+            log(f"Making game: {i + 1}, max amount of games: {max_counter}")
             __add_frame(scrollable_frame, game)
+        counter -= 10
+        max_counter -= 10
 
+
+    add_games()
+
+    more_button = tk.Button(window, text="load more", command=lambda: add_games())
+    more_button.pack(side="bottom")
 
     canvas.bind_all("<MouseWheel>", _on_mousewheel)

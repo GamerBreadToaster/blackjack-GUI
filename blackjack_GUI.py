@@ -347,8 +347,6 @@ stats_data = Stats(**data.get("stats", {}))
 player = Player(data["money"], data["profit"], stats_data)
 settings = Settings(**data_settings)
 
-player.stats.adjust_winstreak()
-
 # root
 root = tk.Tk()
 root.title("Blackjack")
