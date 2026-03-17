@@ -30,7 +30,7 @@ I've tailored these settings for the best experience when playing.\
 Change exactly how you want to play:
 
 #### general cooldown
-default value: `500`
+default value: `750`
 
 The exact cooldown when the AI grabs a new card, and how long until blackjack is revealed.
 

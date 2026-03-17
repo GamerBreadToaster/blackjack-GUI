@@ -47,7 +47,7 @@ class Stats:
 
 # player and dealer classes
 class Player:
-    def __init__(self, money: float, profit: float, stats: Stats, frame = None):
+    def __init__(self, money: float, profit: float, stats: Stats, debt = float, frame = None):
         self.frame = frame
         self.cards = []
         self.__money = money
