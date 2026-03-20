@@ -110,7 +110,7 @@ def sync_cards(dealers_first: bool = False):
     for card in player.cards:
         add_card(card, player.frame)
 
-    # changes the labels to reflect  current game state
+    # changes the labels to reflect current game state
     dealer_score_label.config(text=f"Dealer Score: {dealer.get_score(dealers_first)}")
     player_score_label.config(text=f"Player Score: {player.get_score()}")
     money_label.config(text=f"Cash: ${player.get_money()}")
@@ -138,7 +138,8 @@ def hit():
     if player.get_score() == settings.max_score:
         player.stats.hit_21 += 1
         if settings.stand_at_max:
-            stand()
+            clear_buttons() # clear the keybinds so you can't stand twice
+            root.after(settings.cooldown, lambda: stand())
     if player.get_score() > settings.max_score:
         sync_cards(False)
         final_check_scores()
