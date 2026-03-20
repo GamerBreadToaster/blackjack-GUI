@@ -110,7 +110,7 @@ def sync_cards(dealers_first: bool = False):
     for card in player.cards:
         add_card(card, player.frame)
 
-    # changes the labels to reflect current game state
+    # changes the labels to reflect the current game state
     dealer_score_label.config(text=f"Dealer Score: {dealer.get_score(dealers_first)}")
     player_score_label.config(text=f"Player Score: {player.get_score()}")
     money_label.config(text=f"Cash: ${player.get_money()}")
