@@ -53,6 +53,7 @@ def reset():
     money_label.config(text=f"Cash: ${player.get_money()}")
     profit_label.config(text=f"Profit: ${player.get_profit()}")
     session_profit_label.config(text=f"Session profit: ${player.get_profit(True)}")
+    winstreak_label.config(text=f"Winstreak: {player.stats.get_winstreak()}")
     bet_label = tk.Label(controls_frame, text="$")
     bet_input = tk.Entry(controls_frame, width=10)
     bet_button = tk.Button(controls_frame, text="Bet\nF4", command=get_bet)
@@ -93,7 +94,6 @@ def game_over(result: Result):
     result_button.pack()
     set_info(player)
     add_history(result)
-    game.rounds_played += 1
 
 def sync_cards(dealers_first: bool = False):
     # this handles the logic of showing all cards on screen, and resizing the screen if necessary
@@ -116,6 +116,7 @@ def sync_cards(dealers_first: bool = False):
     money_label.config(text=f"Cash: ${player.get_money()}")
     profit_label.config(text=f"Profit: ${player.get_profit()}")
     session_profit_label.config(text=f"Session profit: ${player.get_profit(True)}")
+    winstreak_label.config(text=f"Winstreak: {player.stats.get_winstreak()}")
 
     # resize screen
     max_cards = max(len(player.frame.winfo_children()), len(dealer.frame.winfo_children()))
@@ -279,11 +280,10 @@ def start_game():
     root.update()
 
     # game logic
-    game.rounds_played += 1
-    log("round:", game.rounds_played)
+    game.add_round()
 
     # reset deck and Cards and deal Cards
-    if game.rounds_played % settings.shuffle_after == 0:
+    if game.get_round() % settings.shuffle_after == 0:
         game.shuffle_deck()
     dealer.cards = []
     player.cards = []
@@ -324,21 +324,28 @@ def on_close():
 # global Game class for eventual full refactoring to class-based structure
 class Game:
     def __init__(self):
-        self.deck = []
-        self.rounds_played = 0
+        self.__deck = []
+        self.__rounds_played = 0
 
     def get_card(self):
         try:
-            return self.deck.pop()
+            return self.__deck.pop()
         except IndexError:
             log("emergency shuffle. Deck was empty")
             self.shuffle_deck()
-            return self.deck.pop()
+            return self.__deck.pop()
+
+    def add_round(self):
+        self.__rounds_played += 1
+        log(f"round: {self.__rounds_played}")
+
+    def get_round(self) -> int:
+        return self.__rounds_played
 
     def shuffle_deck(self):
-        self.deck = deck_blueprint.copy() * settings.deck_amount  # variable numbers of decks
-        random.shuffle(self.deck)
-        log(f"shuffling deck after {self.rounds_played} rounds played, shuffle_after settings: {settings.shuffle_after}, deck amount: {settings.deck_amount}")
+        self.__deck = deck_blueprint.copy() * settings.deck_amount  # variable numbers of decks
+        random.shuffle(self.__deck)
+        log(f"shuffling deck after {self.__rounds_played} rounds played, shuffle_after settings: {settings.shuffle_after}, deck amount: {settings.deck_amount}")
 
 game = Game()
 dealer = Dealer()
@@ -385,6 +392,8 @@ bottom_frame.pack(side="bottom", fill="x", pady=10)
 money_label = tk.Label(bottom_frame, text=f"Cash: ${player.get_money()}")
 profit_label = tk.Label(bottom_frame, text=f"Profit: ${player.get_profit()}")
 session_profit_label = tk.Label(bottom_frame, text=f"Session profit: ${player.get_profit(True)}")
+winstreak_label = tk.Label(bottom_frame, text=f"Winstreak: {player.stats.get_winstreak()}")
+winstreak_label.pack(side="bottom")
 session_profit_label.pack(side="bottom")
 profit_label.pack(side="bottom")
 money_label.pack(side="bottom")

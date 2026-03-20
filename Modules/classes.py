@@ -1,5 +1,6 @@
 from Modules.score_calc import calculate_score, card_value
 from enum import Enum
+from Modules.debug import log
 import time
 
 # stats
@@ -19,7 +20,7 @@ class Stats:
         self.ties = ties
         self.double_downs = double_downs
         self.blackjack_push = blackjack_push
-        self.winstreak = winstreak
+        self.__winstreak = winstreak
         self.hit_21 = hit_21
 
     def total_games(self) -> int:
@@ -36,14 +37,19 @@ class Stats:
         return vars(self)
 
     def adjust_winstreak(self, lose: bool = False):
-        if not lose and self.winstreak < 0:
-            self.winstreak = 1
-        elif not lose and self.winstreak > 0:
-            self.winstreak += 1
-        elif lose and self.winstreak > 0:
-            self.winstreak = 0
-        elif lose and self.winstreak < 0:
-            self.winstreak += -1
+        if not lose and self.__winstreak <= 0:
+            self.__winstreak = 1
+        elif not lose and self.__winstreak > 0:
+            self.__winstreak += 1
+        elif lose and self.__winstreak > 0:
+            self.__winstreak = 0
+        elif lose and self.__winstreak <= 0:
+            self.__winstreak += -1
+
+        log(f"winstreak: {self.__winstreak}")
+
+    def get_winstreak(self) -> int:
+        return self.__winstreak
 
 # player and dealer classes
 class Player:
