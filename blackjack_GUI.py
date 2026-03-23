@@ -13,6 +13,7 @@ screen_size = {"width" : 500, "height" : 800}
 card_categories = ['Hearts', 'Diamonds', 'Clubs', 'Spades']
 cards_list = ['Ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King']
 deck_blueprint = [(card, category) for category in card_categories for card in cards_list]
+game_finished = False
 
 # def's
 def clear_cards(frame):
@@ -38,13 +39,14 @@ def clear_buttons():
 
 def reset():
     # resets the game back to the betting fase
-    global bet_input, settings_button
+    global bet_input, settings_button, game_finished
     clear_cards(player.frame)
     clear_cards(dealer.frame)
     player.double = False
     result_button.destroy()
     root.unbind("<Return>")
     root.unbind("<F4>")
+    game_finished = False
 
     # labels and buttons
     result_label.config(text="", font=("Arial", 14, "bold"), fg="red")
@@ -85,7 +87,7 @@ def reset():
 
 def game_over(result: Result):
     # resetting screen to prevent any more button hitting
-    global result_button
+    global result_button, game_finished
     clear_buttons()
     # buttons will already be destroyed at stand()
     result_button = tk.Button(result_frame, text="continue\nF4", command=reset)
@@ -94,6 +96,7 @@ def game_over(result: Result):
     result_button.pack()
     set_info(player)
     add_history(result)
+    game_finished = True
 
 def sync_cards(dealers_first: bool = False):
     # this handles the logic of showing all cards on screen, and resizing the screen if necessary
@@ -316,9 +319,16 @@ def get_bet(event = None):
 
 def on_close():
     if not bet_input.winfo_exists(): # if the betting button doesn't exist
-        player.stats.total_lost += player.bet
-        player.stats.player_bust += 1
-        set_info(player)
+        if game_finished:
+            log("exiting after reset")
+            reset()
+        else:
+            #TODO: save the current state of the cards into the history
+            player.stats.total_lost += player.bet
+            player.stats.player_bust += 1
+            set_info(player)
+            log("adding loss")
+    log("exiting program")
     root.destroy()
 
 # global Game class for eventual full refactoring to class-based structure
