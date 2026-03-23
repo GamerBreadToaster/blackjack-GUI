@@ -3,6 +3,7 @@ from Modules.debug import log, DEBUG_MODE
 from Modules.image_adjuster import add_card
 from Modules.file_adjuster import get_history
 from datetime import datetime
+import math
 
 # almost Fully AI generated because I didn't know what the fuck I was doing
 
@@ -80,8 +81,10 @@ def stats_gui():
         if highest_in_game > max_cards_ever:
             max_cards_ever = highest_in_game
 
+    req_length = int(len(history["games"]) / 25)
+
     req_width = max(525, max_cards_ever * 125 + 25)
-    screen_size = {"width": req_width, "height": 800}
+    screen_size = {"width": req_width, "height": 800 + req_length}
 
     # --- Main Stats Window Setup ---
     window = tk.Toplevel()
@@ -108,25 +111,60 @@ def stats_gui():
 
     # Draw the games in reverse order so the newest games are at the top!
     # I have no idea what I'm doing here, which is obvious
-    global counter, max_counter
-    max_counter = len(history["games"])
-    counter = max_counter - 10
-    def add_games():
-        global counter, max_counter
-        if counter < 1:
-            # more_button.config(state="disabled")
-            counter = 0
-        for i in reversed(range(counter, max_counter)):
-            game = history["games"][i]
-            log(f"Making game: {i + 1}, max amount of games: {max_counter}")
+    # global counter, max_counter
+    # max_counter = len(history["games"])
+    # counter = max_counter - 10
+    # def add_games():
+    #     global counter, max_counter
+    #     if counter < 1:
+    #         # more_button.config(state="disabled")
+    #         counter = 0
+    #     for i in reversed(range(counter, max_counter)):
+    #         game = history["games"][i]
+    #         log(f"Making game: {i + 1}, max amount of games: {max_counter}")
+    #         __add_frame(scrollable_frame, game)
+    #     counter -= 10
+    #     max_counter -= 10
+
+    def __add_buttons(frame_number):
+        def __add_button(frame, page):
+            button = tk.Button(frame, text=str(page), command=lambda: __add_games(page))
+            button.pack(side="left", padx=5, pady=5)
+
+        frame = tk.Frame(window)
+        frame.pack(fill="x")
+
+        amount_pages = len(history["games"]) / 10 + 1
+        if amount_pages < 1:
+            amount_pages = 1
+
+        amount_pages = min(math.ceil(amount_pages), frame_number * 10)
+        min_pages = (frame_number - 1) * 10 + 1
+
+        for i in range(min_pages, amount_pages):
+            __add_button(frame, i)
+
+
+    def __add_games(page: int):
+        for child in scrollable_frame.winfo_children():
+            child.destroy()
+
+        amount_games = len(history["games"])
+        max_counter = amount_games - (page * 10 - 10)
+        min_counter = amount_games - page * 10
+        if max_counter < 0:
+            max_counter = 0
+
+        for index_game in reversed(range(min_counter, max_counter)):
+            game = history["games"][index_game]
+            log(f"Making game: {index_game + 1}, max amount of games: {max_counter}")
             __add_frame(scrollable_frame, game)
-        counter -= 10
-        max_counter -= 10
 
+    __add_games(1)
 
-    add_games()
+    max_frames = math.ceil(len(history["games"]) / 100)
 
-    more_button = tk.Button(window, text="load more", command=lambda: add_games())
-    more_button.pack(side="bottom")
+    for i in range(1, max_frames + 1):
+        __add_buttons(i)
 
     canvas.bind_all("<MouseWheel>", _on_mousewheel)
