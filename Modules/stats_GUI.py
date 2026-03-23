@@ -152,8 +152,8 @@ def stats_gui():
         amount_games = len(history["games"])
         max_counter = amount_games - (page * 10 - 10)
         min_counter = amount_games - page * 10
-        if max_counter < 0:
-            max_counter = 0
+        if min_counter < 0:
+            min_counter = 0
 
         for index_game in reversed(range(min_counter, max_counter)):
             game = history["games"][index_game]
