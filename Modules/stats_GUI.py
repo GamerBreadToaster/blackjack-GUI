@@ -134,14 +134,14 @@ def stats_gui():
         frame = tk.Frame(window)
         frame.pack(fill="x")
 
-        amount_pages = len(history["games"]) / 10 + 1
+        amount_pages = len(history["games"]) / 10
         if amount_pages < 1:
             amount_pages = 1
 
         amount_pages = min(math.ceil(amount_pages), frame_number * 10)
         min_pages = (frame_number - 1) * 10 + 1
 
-        for i in range(min_pages, amount_pages):
+        for i in range(min_pages, amount_pages + 1):
             __add_button(frame, i)
 
 

@@ -20,7 +20,7 @@ class Stats:
         self.ties = ties
         self.double_downs = double_downs
         self.blackjack_push = blackjack_push
-        self.__winstreak = winstreak
+        self.winstreak = winstreak
         self.hit_21 = hit_21
 
     def total_games(self) -> int:
@@ -37,19 +37,19 @@ class Stats:
         return vars(self)
 
     def adjust_winstreak(self, lose: bool = False):
-        if not lose and self.__winstreak <= 0:
-            self.__winstreak = 1
-        elif not lose and self.__winstreak > 0:
-            self.__winstreak += 1
-        elif lose and self.__winstreak > 0:
-            self.__winstreak = 0
-        elif lose and self.__winstreak <= 0:
-            self.__winstreak += -1
+        if not lose and self.winstreak <= 0:
+            self.winstreak = 1
+        elif not lose and self.winstreak > 0:
+            self.winstreak += 1
+        elif lose and self.winstreak > 0:
+            self.winstreak = 0
+        elif lose and self.winstreak <= 0:
+            self.winstreak += -1
 
-        log(f"winstreak: {self.__winstreak}")
+        log(f"winstreak: {self.winstreak}")
 
     def get_winstreak(self) -> int:
-        return self.__winstreak
+        return self.winstreak
 
 # player and dealer classes
 class Player:
@@ -125,6 +125,7 @@ class ResultType(Enum):
     PUSH_BLACKJACK = "PUSH_BLACKJACK"
     DEALER_BLACKJACK = "DEALER_BLACKJACK"
     PLAYER_BLACKJACK = "PLAYER_BLACKJACK"
+    PLAYER_EXIT = "PLAYER_EXIT"
 
 # end-of-game result class for easy saving and checking
 class Result:
@@ -149,6 +150,7 @@ class Result:
 
     def set_result_string(self) -> str:
         match self.__win_type:
+            case ResultType.PLAYER_EXIT: return f"You exited the game! You lose ${self.bet}!"
             case ResultType.PLAYER_BUST: return f"You are bust! You lose ${self.bet}!"
             case ResultType.DEALER_BUST: return f"Dealers bust! You win ${self.bet*2}!"
             case ResultType.PUSH: return f"Push! You get ${self.bet} back!"

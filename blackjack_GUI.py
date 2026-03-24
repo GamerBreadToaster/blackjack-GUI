@@ -323,10 +323,11 @@ def on_close():
             log("exiting after reset")
             reset()
         else:
-            #TODO: save the current state of the cards into the history
             player.stats.total_lost += player.bet
             player.stats.player_bust += 1
             set_info(player)
+            result = Result(player, dealer, ResultType.PLAYER_EXIT)
+            add_history(result)
             log("adding loss")
     log("exiting program")
     root.destroy()

@@ -60,7 +60,7 @@ def add_history(result: Result):
 
     data["games"].append(result.to_dict())
     with open(file_path, "w") as file:
-        json.dump(data, file, indent=2)
+        json.dump(data, file)
 
 def get_history():
     file_path = "history.json"
