@@ -39,7 +39,7 @@ default value: `6`
 
 min value: `1`
 
-Total number of decks used in the game if you want to use card counting. Shuffles if all cards are used.
+Total number of decks used in the game if you want to use card counting. The cards that are pulled are appended to the end of the list.
 
 #### Shuffles after this many rounds
 default value: `5`

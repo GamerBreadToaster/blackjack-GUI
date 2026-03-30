@@ -340,11 +340,15 @@ class Game:
 
     def get_card(self):
         try:
-            return self.__deck.pop()
+            card = self.__deck.pop()
+            return card
         except IndexError:
             log("emergency shuffle. Deck was empty")
             self.shuffle_deck()
-            return self.__deck.pop()
+            card = self.__deck.pop()
+            return card
+        finally:
+            self.__deck.append(card)
 
     def add_round(self):
         self.__rounds_played += 1
