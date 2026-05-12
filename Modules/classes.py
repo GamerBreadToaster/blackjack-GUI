@@ -100,7 +100,7 @@ class Dealer:
 # settings
 class Settings:
     def __init__(self, cooldown: int = 750, deck_amount: int = 6, shuffle_after = 5, dealer_stop: int = 17, credit_card_debt: float = 1000,
-                 max_score: int = 21, enable_blackjack: bool = True, stand_at_max: bool = True, **kwargs):
+                 max_score: int = 21, enable_blackjack: bool = True, stand_at_max: bool = True, record_history = True, **kwargs):
         self.cooldown = cooldown
         self.deck_amount = deck_amount
         self.shuffle_after = shuffle_after
@@ -109,6 +109,7 @@ class Settings:
         self.max_score = max_score
         self.enable_blackjack = enable_blackjack
         self.stand_at_max = stand_at_max
+        self.record_history = record_history
 
     def to_dict(self):
         """Helper to turn this object into a dictionary automatically."""

@@ -11,6 +11,7 @@ def settings_gui(settings: Settings) -> Settings:
         settings.max_score = 21
         settings.enable_blackjack = True
         settings.stand_at_max = True
+        settings.record_history = True
         set_settings(settings)
         window.destroy()
     def __add_labeled_field(parent: tk.Misc, label_text: str, initial_value) -> tk.Entry:
@@ -29,6 +30,7 @@ def settings_gui(settings: Settings) -> Settings:
         try:
             settings.enable_blackjack = enable_blackjack_var.get()
             settings.stand_at_max = stand_at_max_var.get()
+            settings.record_history = record_history_var.get()
             settings.cooldown = int(cooldown_entry.get())
             settings.deck_amount = int(deck_amount_entry.get())
             if settings.deck_amount < 1:
@@ -89,6 +91,9 @@ def settings_gui(settings: Settings) -> Settings:
     enable_blackjack_var = tk.BooleanVar(value=settings.enable_blackjack)
     enable_blackjack_button = tk.Checkbutton(window, text="Enable blackjack", variable=enable_blackjack_var)
     enable_blackjack_button.pack()
+    record_history_var = tk.BooleanVar(value=settings.record_history)
+    record_history_button = tk.Checkbutton(window, text="record game history", variable=record_history_var)
+    record_history_button.pack()
 
     error_label = tk.Label(window)
     error_label.pack()

@@ -1,6 +1,5 @@
 import os.path
-
-from Modules.classes import Player, Settings, Dealer, Result
+from Modules.classes import Player, Settings, Result
 import json
 
 def get_info():
